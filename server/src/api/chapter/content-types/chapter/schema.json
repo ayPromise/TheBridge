@@ -24,10 +24,6 @@
       "type": "blocks",
       "required": true
     },
-    "position": {
-      "type": "integer",
-      "required": true
-    },
     "book": {
       "type": "relation",
       "relation": "manyToOne",

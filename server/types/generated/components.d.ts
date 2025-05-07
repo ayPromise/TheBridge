@@ -1,5 +1,32 @@
 import type { Schema, Struct } from '@strapi/strapi';
 
+export interface BookAuthor extends Struct.ComponentSchema {
+  collectionName: 'components_book_authors';
+  info: {
+    description: '';
+    displayName: 'Author';
+    icon: 'user';
+  };
+  attributes: {
+    firstName: Schema.Attribute.String & Schema.Attribute.Required;
+    lastName: Schema.Attribute.String;
+    middleName: Schema.Attribute.String;
+  };
+}
+
+export interface BookEpigraph extends Struct.ComponentSchema {
+  collectionName: 'components_book_epigraphs';
+  info: {
+    description: '';
+    displayName: 'Epigraph';
+    icon: 'pencil';
+  };
+  attributes: {
+    author: Schema.Attribute.String & Schema.Attribute.Required;
+    rawContent: Schema.Attribute.Blocks & Schema.Attribute.Required;
+  };
+}
+
 export interface SharedMedia extends Struct.ComponentSchema {
   collectionName: 'components_shared_media';
   info: {
@@ -65,6 +92,8 @@ export interface SharedSlider extends Struct.ComponentSchema {
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
+      'book.author': BookAuthor;
+      'book.epigraph': BookEpigraph;
       'shared.media': SharedMedia;
       'shared.quote': SharedQuote;
       'shared.rich-text': SharedRichText;

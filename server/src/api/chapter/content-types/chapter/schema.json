@@ -1,0 +1,44 @@
+{
+  "kind": "collectionType",
+  "collectionName": "chapters",
+  "info": {
+    "singularName": "chapter",
+    "pluralName": "chapters",
+    "displayName": "Chapter",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "title",
+      "required": true
+    },
+    "rawContent": {
+      "type": "blocks",
+      "required": true
+    },
+    "position": {
+      "type": "integer",
+      "required": true
+    },
+    "book": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::book.book",
+      "inversedBy": "chapters"
+    },
+    "epigraph": {
+      "displayName": "Epigraph",
+      "type": "component",
+      "repeatable": false,
+      "component": "book.epigraph"
+    }
+  }
+}

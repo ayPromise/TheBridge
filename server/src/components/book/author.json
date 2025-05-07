@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_book_authors",
+  "info": {
+    "displayName": "Author",
+    "icon": "user",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "firstName": {
+      "type": "string",
+      "required": true
+    },
+    "lastName": {
+      "type": "string",
+      "required": false
+    },
+    "middleName": {
+      "type": "string",
+      "required": false
+    }
+  }
+}

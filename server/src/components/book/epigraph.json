@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_book_epigraphs",
+  "info": {
+    "displayName": "Epigraph",
+    "icon": "pencil",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "author": {
+      "type": "string",
+      "required": true
+    },
+    "rawContent": {
+      "type": "blocks",
+      "required": true
+    }
+  }
+}

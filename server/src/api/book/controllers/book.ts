@@ -8,16 +8,17 @@ export default factories.createCoreController('api::book.book', ({strapi})=>({
     async find(ctx){
         const user = ctx.state.user
         const books = await strapi.db.query('api::book.book').findMany({where:{owner:user.id}, populate:{
-            owner:true,
-            chapters:{select:['id','title']}
-        }})
+            owner:true        }})
         return ctx.send({data:books})
     },
 
     async findOne(ctx){
         const user = ctx.state.user
         const bookId = ctx.params.id
-        const book = await strapi.db.query('api::book.book').findOne({where:{id:bookId}, populate:true})
+        const book = await strapi.db.query('api::book.book').findOne({where:{id:bookId}, populate:{
+            owner:true,
+            chapters:{select:['id','title']}
+        }})
 
         if (!book) {
             return ctx.notFound('Book does not exist');

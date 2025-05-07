@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+.navbar{
+    @apply bg-slate-500 text-amber-200 py-20 px-10 h-screen w-[300px] font-header
+}
+
+.navigationList{
+    @apply flex flex-col gap-[50px]
+}
+
+.navigationList li{
+    @apply uppercase
+}
+
+.active{
+    @apply text-amber-500
+}

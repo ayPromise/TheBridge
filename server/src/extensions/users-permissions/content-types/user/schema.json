@@ -68,7 +68,8 @@
     "books": {
       "type": "relation",
       "relation": "oneToMany",
-      "target": "api::book.book"
+      "target": "api::book.book",
+      "mappedBy": "owner"
     }
   }
 }

@@ -1,61 +1,88 @@
-import { Box, Button, CircularProgress, Container, InputLabel, Link, TextField, Typography } from "@mui/material";
+import {
+    Box,
+    Button,
+    CircularProgress,
+    Container,
+    InputLabel,
+    Link,
+    TextField,
+} from "@mui/material";
+import OAuthButtons from "components/OAuthButtons";
 import { useState } from "react";
-import { FaGithub, FaGoogle } from "react-icons/fa";
-import { setUserSession } from "utils/auth";
-const backendUrl = import.meta.env.VITE_STRAPI_BACKEND_URL;
+import { type ActionFunctionArgs, useActionData, useNavigation } from "react-router";
+import { redirect } from "react-router";
+import { setUserSession } from "~/session";
 
 interface FormState {
     email: string;
     password: string;
 }
 
-export default function SignInPage() {
-    const [form, setForm] = useState<FormState>({ email: '', password: '' })
-    const [loadingRequest, setLoadingRequest] = useState<boolean>(false)
-    const [error, setError] = useState<string>("")
+interface ActionData {
+    error?: string;
+}
 
-    const handleLogin = (provider: 'google' | 'github') => {
-        setLoadingRequest(true)
+export const action = async ({ request }: ActionFunctionArgs) => {
+    const formData = await request.formData();
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
 
-        const url = new URL(backendUrl + `/api/connect/${provider}`)
-        window.location.href = url.href
-
-        setLoadingRequest(false)
-    };
-
-    const handleCredentialsLogin = async (event: any) => {
-        event.preventDefault()
-        const path = new URL(backendUrl + '/api/auth/local')
-        if (form.email && form.password) {
-            setLoadingRequest(true)
-            const response = await fetch(path, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    identifier: form.email,
-                    password: form.password
-                })
-            })
-
-            const data = await response.json()
-
-            setTimeout(() => {
-                setLoadingRequest(false)
-            }, 1000)
-
-            if (data.error && data.error.message === 'Invalid identifier or password')
-                setError('Invalid email or password')
-
-            setUserSession(data.jwt, data.user)
-        }
+    if (!email || !password) {
+        return { error: "Email and password are required" } as ActionData;
     }
 
+    if (!/\S+@\S+\.\S+/.test(email)) {
+        return { error: "Please enter a valid email address" } as ActionData;
+    }
+
+    const backendUrl = import.meta.env.VITE_STRAPI_BACKEND_URL;
+    const path = `${backendUrl}/api/auth/local`;
+
+    try {
+        const response = await fetch(path, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                identifier: email,
+                password,
+            }),
+        });
+
+        const data = await response.json();
+        if (data.error) {
+            return {
+                error: data.error.message === "Invalid identifier or password"
+                    ? "Invalid email or password"
+                    : data.error.message || data.error,
+            } as ActionData;
+        }
+
+        if (!data.jwt || !data.user) {
+            return { error: "Invalid response from authentication server" } as ActionData;
+        }
+
+        const headers = await setUserSession(request, data.jwt, data.user);
+        return redirect("/", { headers });
+    } catch (error: any) {
+        return { error: "An error occurred during sign-in" } as ActionData;
+    }
+};
+
+export default function SignInPage() {
+    const [form, setForm] = useState<FormState>({ email: "", password: "" });
+    const actionData = useActionData<ActionData>();
+    const navigation = useNavigation();
+    const loadingRequest = navigation.state === "submitting";
+
     return (
-        <Container maxWidth="sm" sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+        <Container
+            maxWidth="sm"
+            sx={{ minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center" }}
+        >
             <div className="bg-main-extraLight px-6 py-8 rounded-3xl w-[75%]">
-                <Box component="form" onSubmit={handleCredentialsLogin} noValidate autoComplete="off" sx={{ mt: 2 }}>
+                <Box component="form" method="post" noValidate autoComplete="off" sx={{ mt: 2 }}>
                     <fieldset>
                         <InputLabel htmlFor="email">Email address</InputLabel>
                         <TextField
@@ -68,19 +95,19 @@ export default function SignInPage() {
                             autoComplete="email"
                             sx={{ mt: 1 }}
                             onChange={(e) => setForm({ ...form, email: e.target.value })}
+                            value={form.email}
                         />
                     </fieldset>
 
                     <fieldset>
-
                         <div className="relative">
-                            <InputLabel htmlFor="password" sx={{ mt: 2 }}>Password</InputLabel>
+                            <InputLabel htmlFor="password" sx={{ mt: 2 }}>
+                                Password
+                            </InputLabel>
                             <Link href="#" underline="hover" fontSize="0.875rem" className="absolute top-0 right-0">
                                 Forgot password?
                             </Link>
                         </div>
-
-
                         <TextField
                             required
                             fullWidth
@@ -91,11 +118,12 @@ export default function SignInPage() {
                             autoComplete="current-password"
                             sx={{ mt: 1 }}
                             onChange={(e) => setForm({ ...form, password: e.target.value })}
+                            value={form.password}
                         />
                     </fieldset>
 
                     <div className={`h-[15px] py-2 my-2 text-red-600 font-extrabold pointer-events-none`}>
-                        {!loadingRequest && error}
+                        {!loadingRequest && actionData?.error}
                     </div>
 
                     <fieldset>
@@ -107,41 +135,22 @@ export default function SignInPage() {
                                 mt: 3,
                                 py: 1.5,
                                 height: 40,
-                                textTransform: 'none',
-                                fontWeight: 'bold',
+                                textTransform: "none",
+                                fontWeight: "bold",
                             }}
-                            loading={loadingRequest}
-                            loadingIndicator={<CircularProgress size={24} sx={{
-                                color: 'white',
-                            }} />}
+                            disabled={loadingRequest}
                         >
-                            Sign In
+                            {loadingRequest ? (
+                                <CircularProgress size={24} sx={{ color: "white" }} />
+                            ) : (
+                                "Sign In"
+                            )}
                         </Button>
                     </fieldset>
                 </Box>
             </div>
 
-            <div className="w-[75%] px-6 py-6 bg-main-extraLight rounded-3xl mt-4">
-                <Button startIcon={<FaGoogle />} onClick={() => handleLogin('google')} variant="contained"
-                    fullWidth
-                    sx={{
-                        mb: 1,
-                        backgroundColor: "white", color: "black"
-                    }}
-                    disabled={loadingRequest}
-                >
-                </Button>
-
-                <Button
-                    startIcon={<FaGithub />}
-                    onClick={() => handleLogin('github')}
-                    variant="contained"
-                    sx={{ backgroundColor: 'black', '&:hover': { backgroundColor: '#333' } }}
-                    fullWidth
-                    disabled={loadingRequest}
-                >
-                </Button>
-            </div>
+            <OAuthButtons loadingRequest={loadingRequest} setLoadingRequest={() => { }} />
         </Container>
     );
 }

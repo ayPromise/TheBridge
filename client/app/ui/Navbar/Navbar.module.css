@@ -25,5 +25,5 @@
 }
 
 .copyright{
-    @apply text-main-light
+    @apply text-main-light text-sm
 }

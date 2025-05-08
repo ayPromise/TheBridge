@@ -1,9 +1,16 @@
 import { Link, useLocation } from "react-router"
 import classes from "./Navbar.module.css"
+import { Button } from "@mui/material"
+import type UserSession from "types/UserSession"
 
-const Navbar: React.FC = () => {
+interface NavbarProps {
+    user: UserSession | null
+}
+
+const Navbar: React.FC<NavbarProps> = ({ user }) => {
     const { pathname } = useLocation()
-    const navigationLinks = [
+
+    const onlyPublicLinks = [
         {
             title: 'Sign in',
             href: '/sign-in'
@@ -21,17 +28,20 @@ const Navbar: React.FC = () => {
 
 
                 <ul className={classes.navigationList}>
-                    {navigationLinks.map(((link, index) => (<li key={index} className={classes.navigationItem}>
+                    {!user && onlyPublicLinks.map(((link, index) => (<li key={index} className={classes.navigationItem}>
                         <Link to={link.href} className={link.href === pathname ? classes.active : ''}> {link.title}</Link>
                     </li>)))}
                 </ul>
-
-
-
             </div>
 
-            <div className={classes.copyright}>
-                Copyright ©ayPromise
+            <div className="flex flex-col gap-[50px]">
+                {user && <Link to={"/sign-out"}>
+                    <Button variant="contained" color="error" fullWidth>Sign Out</Button>
+                </Link>}
+
+                <div className={classes.copyright}>
+                    Copyright ©ayPromise
+                </div>
             </div>
         </nav>
     )

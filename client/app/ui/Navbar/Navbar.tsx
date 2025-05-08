@@ -1,13 +1,16 @@
 import { Link, useLocation } from "react-router"
 import classes from "./Navbar.module.css"
-import SplitButton from "./SplittedButton"
 
 const Navbar: React.FC = () => {
     const { pathname } = useLocation()
     const navigationLinks = [
         {
-            title: 'Books',
-            href: '/books'
+            title: 'Sign in',
+            href: '/sign-in'
+        },
+        {
+            title: 'Sign up',
+            href: '/sign-up'
         }
     ]
 
@@ -23,8 +26,6 @@ const Navbar: React.FC = () => {
                     </li>)))}
                 </ul>
 
-
-                <SplitButton pathName={pathname} />
 
 
             </div>

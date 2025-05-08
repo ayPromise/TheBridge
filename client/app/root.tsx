@@ -30,7 +30,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body suppressHydrationWarning>
         {children}
         <ScrollRestoration />
         <Scripts />
@@ -44,7 +44,7 @@ export default function App() {
     <Grid size={2}>
       <Navbar />
     </Grid>
-    <Grid>
+    <Grid size={10}>
       <Outlet />
     </Grid>
   </Grid>;

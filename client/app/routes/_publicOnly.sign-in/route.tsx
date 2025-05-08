@@ -11,7 +11,7 @@ import OAuthButtons from "components/OAuthButtons";
 import { useState } from "react";
 import { type ActionFunctionArgs, useActionData, useNavigation } from "react-router";
 import { redirect } from "react-router";
-import { setUserSession } from "~/session";
+import { setUserSession } from "~/session/auth";
 
 interface FormState {
     email: string;

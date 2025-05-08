@@ -1,5 +1,5 @@
 import { Navigate, Outlet, useLoaderData, type LoaderFunctionArgs } from "react-router"
-import { getUserSession, validateUserSession } from "~/session"
+import { getUserSession, validateUserSession } from "~/session/auth"
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
     const user = await getUserSession(request)

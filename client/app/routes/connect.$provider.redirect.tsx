@@ -1,6 +1,6 @@
 import { CircularProgress } from "@mui/material";
 import { type LoaderFunctionArgs, redirect, useLoaderData } from "react-router";
-import { setUserSession } from "~/session";
+import { setUserSession } from "~/session/auth";
 
 interface CustomError {
     error: string,

@@ -1,8 +1,15 @@
-import { Navigate, Outlet } from "react-router"
-import { validateUserSession } from "utils/auth"
+import { Navigate, Outlet, useLoaderData, type LoaderFunctionArgs } from "react-router"
+import { getUserSession, validateUserSession } from "~/session"
+
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+    const user = await getUserSession(request)
+    return { user }
+}
 
 const NotAuthOnlyRoute: React.FC = () => {
-    return validateUserSession() ? <Navigate to={"/"} /> : <Outlet />
+    const { user } = useLoaderData<typeof loader>()
+
+    return user ? <Navigate to={"/"} /> : <Outlet />
 }
 
 export default NotAuthOnlyRoute

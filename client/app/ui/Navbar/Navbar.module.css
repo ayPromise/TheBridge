@@ -1,17 +1,16 @@
 @import "tailwindcss";
-
+@import "../../theme.css";
 .navbar{
-    @apply bg-slate-500 text-amber-200 py-20 px-10 h-screen w-[300px] font-header
+    @apply bg-main-extraLight py-24 px-10 h-screen w-[350px] text-main-extraDark font-main;
 }
 
 .navigationList{
     @apply flex flex-col gap-[50px]
 }
 
-.navigationList li{
-    @apply uppercase
+.navigationItem{
+    @apply uppercase text-3xl;
 }
-
 .active{
-    @apply text-amber-500
+    @apply font-extrabold
 }

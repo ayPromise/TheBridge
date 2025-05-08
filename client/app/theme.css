@@ -2,17 +2,17 @@
 
 @font-face{
     font-family: Montserrat;
-    src:url('../public/fonts/Montserrat-Regular.ttf');
+    src:url('../fonts/Montserrat-Regular.ttf');
 }
 
 @font-face{
     font-family: Gothic;
-    src:url('../public/fonts/SpecialGothicExpandedOne-Regular.ttf');
+    src:url('../fonts/SpecialGothicExpandedOne-Regular.ttf');
 }
 
 @font-face{
     font-family: Tagesschrift;
-    src:url('../public/fonts/Tagesschrift-Regular.ttf');
+    src:url('../fonts/Tagesschrift-Regular.ttf');
 }
 
 @theme{

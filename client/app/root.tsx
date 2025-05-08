@@ -40,7 +40,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Grid container spacing={2} className="bg-secondary-extraLight font-typo">
+  return <Grid container spacing={2} className="bg-secondary-extraLight font-typo text-white">
     <Grid size={2}>
       <Navbar />
     </Grid>

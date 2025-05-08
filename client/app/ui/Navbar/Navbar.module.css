@@ -1,16 +1,29 @@
 @import "tailwindcss";
 @import "../../theme.css";
 .navbar{
-    @apply bg-main-extraLight py-24 px-10 h-screen w-[350px] text-main-extraDark font-main;
+    @apply bg-main-extraLight py-24 px-10 h-screen text-main-extraDark font-main flex flex-col justify-between;
 }
 
-.navigationList{
-    @apply flex flex-col gap-[50px]
+.navigationContainer{
+    @apply flex flex-col gap-[100px]
+}
+
+.navgationList{
+    @apply flex flex-col gap-[30px]
 }
 
 .navigationItem{
     @apply uppercase text-3xl;
 }
+
+.navigationButton{
+    @apply bg-main-dark;
+}
+
 .active{
     @apply font-extrabold
+}
+
+.copyright{
+    @apply text-main-light
 }

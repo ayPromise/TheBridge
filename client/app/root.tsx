@@ -5,12 +5,15 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
+  type LoaderFunctionArgs,
 } from "react-router";
 
 import type { Route } from "./+types/root";
 import "./app.css"
 import Navbar from "./ui/Navbar/Navbar";
 import { Grid } from "@mui/material";
+import { getUserSession } from "~/session";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -39,10 +42,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const user = await getUserSession(request)
+  return { user }
+}
+
 export default function App() {
+  const { user } = useLoaderData<typeof loader>()
   return <Grid container spacing={2} className="bg-secondary-extraLight font-typo text-white">
     <Grid size={2}>
-      <Navbar />
+      <Navbar user={user} />
     </Grid>
     <Grid size={10}>
       <Outlet />

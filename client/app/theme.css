@@ -1,0 +1,83 @@
+@import "tailwindcss";
+
+@font-face{
+    font-family: Montserrat;
+    src:url('../public/fonts/Montserrat-Regular.ttf');
+}
+
+@font-face{
+    font-family: Gothic;
+    src:url('../public/fonts/SpecialGothicExpandedOne-Regular.ttf');
+}
+
+@font-face{
+    font-family: Tagesschrift;
+    src:url('../public/fonts/Tagesschrift-Regular.ttf');
+}
+
+@theme{
+    /* CUSTOM COLORS */
+    --color-main: #C99A26;
+    --color-main-light:#DFB54D;
+    --color-main-extraLight:#FFDA80;
+    --color-main-dark:#A27812;
+    --color-main-extraDark:#7A5700;
+
+    --color-secondary: #1C637E;
+    --color-secondary-light:#558DA2;
+    --color-secondary-extraLight:#34748C;
+    --color-secondary-dark:#0F4E66;
+    --color-secondary-extraDark:#03384C;
+
+    --color-extra: #472589;
+    --color-extra-light:#7C61B0;
+    --color-extra-extraLight:#5D3F98;
+    --color-extra-dark:#34166F;
+    --color-extra-extraDark:#210853;
+
+
+    /* CUSTOM FONTS */
+    --font-main: Tagesschrift;
+    --font-gothic: Gothic;
+    --font-typo: Montserrat;
+
+
+    /* CUSTOM TEXT SIZES */
+    --text-xs: 12px;
+    --text-sm: 14px;
+    --text-base: 16px;
+    --text-lg: 18px;
+    --text-xl: 20px;
+    --text-2xl: 24px;
+    --text-3xl: 30px;
+    --text-4xl: 36px;
+    --text-5xl: 48px;
+
+
+    /* CUSTOM RADIUS */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 16px;
+    --radius-full: 9999px;
+
+
+    /* CUSTOM CONTAINER WIDTH */
+    --container-sm: 640px;
+    --container-md: 768px;
+    --container-lg: 1024px;
+    --container-xl: 1280px;
+    --container-2xl: 1536px;
+
+    /* CUSTOM SPACING SIZES */
+    --size-1: 4px;
+    --size-2: 8px;
+    --size-3: 12px;
+    --size-4: 16px;
+    --size-5: 20px;
+    --size-6: 24px;
+    --size-8: 32px;
+    --size-10: 40px;
+    --size-12: 48px;
+    --size-16: 64px;
+
+}

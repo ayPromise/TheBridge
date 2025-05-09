@@ -1,11 +1,17 @@
 import { redirect, useLoaderData, type LoaderFunctionArgs } from "react-router"
 import { getJwt } from "~/session/auth"
 import type { Book } from "types/Book"
+import { store } from "store"
 
 const backendURL = import.meta.env.VITE_STRAPI_BACKEND_URL
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     const jwt = await getJwt(request)
+
+    const books = store.getState().books.value;
+    const bookFromStore = books.find((book) => book.id === Number(params.id));
+    if (bookFromStore)
+        return { book: bookFromStore }
 
     const apiPath = `/api/books/${params.id}`
     const newURL = new URL(backendURL + apiPath)
@@ -29,7 +35,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 }
 
 
-const Book = () => {
+const BookPage: React.FC = () => {
     const { book } = useLoaderData<any>()
 
     return (
@@ -37,4 +43,4 @@ const Book = () => {
     )
 }
 
-export default Book
+export default BookPage

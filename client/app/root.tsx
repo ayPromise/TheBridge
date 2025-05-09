@@ -18,6 +18,9 @@ import { getJwt, getUserSession } from "~/session/auth";
 import NameLabel from "components/NameLabel";
 import type { Book } from "types/Book";
 import type UserSession from "types/UserSession";
+import ReduxProvider from "store/ReduxProvider";
+import { useDispatch } from "react-redux";
+import { setBooks } from "features/books/booksSlice";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -38,7 +41,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body suppressHydrationWarning>
-        {children}
+        <ReduxProvider>
+          {children}
+        </ReduxProvider>
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -73,10 +78,14 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export default function App() {
   const { user, books } = useLoaderData<typeof loader>()
+  const dispatch = useDispatch()
+
+  dispatch(setBooks(books as Book[]));
+
   return <Grid container spacing={2} className="bg-secondary-extraLight font-typo text-white">
     <NameLabel user={user} />
     <Grid size={2}>
-      <Navbar user={user} books={books} />
+      <Navbar user={user} />
     </Grid>
     <Grid size={10}>
       <Outlet />

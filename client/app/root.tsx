@@ -3,6 +3,7 @@ import {
   Links,
   Meta,
   Outlet,
+  redirect,
   Scripts,
   ScrollRestoration,
   useLoaderData,
@@ -13,7 +14,10 @@ import type { Route } from "./+types/root";
 import "./app.css"
 import Navbar from "./ui/Navbar/Navbar";
 import { Grid } from "@mui/material";
-import { getUserSession } from "~/session";
+import { getJwt, getUserSession } from "~/session/auth";
+import NameLabel from "components/NameLabel";
+import type { Book } from "types/Book";
+import type UserSession from "types/UserSession";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -41,17 +45,38 @@ export function Layout({ children }: { children: React.ReactNode }) {
     </html>
   );
 }
+const backendURL = import.meta.env.VITE_STRAPI_BACKEND_URL
+
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const user = await getUserSession(request)
-  return { user }
+  const jwt = await getJwt(request)
+
+  const apiPath = `/api/books`
+  const newURL = new URL(backendURL + apiPath)
+
+  try {
+    const response = await fetch(newURL, {
+      headers: {
+        "Authorization": `Bearer ${jwt}`,
+        "Content-Type": "application/json"
+      }
+    })
+
+    const data = await response.json()
+
+    return { books: data.data as Book[] | null, user: user as UserSession | null }
+  } catch {
+    return redirect("/")
+  }
 }
 
 export default function App() {
-  const { user } = useLoaderData<typeof loader>()
+  const { user, books } = useLoaderData<typeof loader>()
   return <Grid container spacing={2} className="bg-secondary-extraLight font-typo text-white">
+    <NameLabel user={user} />
     <Grid size={2}>
-      <Navbar user={user} />
+      <Navbar user={user} books={books} />
     </Grid>
     <Grid size={10}>
       <Outlet />

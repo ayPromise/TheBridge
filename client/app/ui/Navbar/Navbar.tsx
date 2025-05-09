@@ -3,13 +3,14 @@ import classes from "./Navbar.module.css"
 import { Button } from "@mui/material"
 import type UserSession from "types/UserSession"
 import type { Book } from "types/Book"
+import { useSelector } from "react-redux"
 
 interface NavbarProps {
     user: UserSession | null
-    books: Book[] | null
 }
 
-const Navbar: React.FC<NavbarProps> = ({ user, books }) => {
+const Navbar: React.FC<NavbarProps> = ({ user }) => {
+    const books = useSelector(state => state.books.value as Book[])
     const { pathname } = useLocation()
 
     const onlyPublicLinks = [

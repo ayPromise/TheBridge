@@ -27,6 +27,7 @@ const Navbar: React.FC<NavbarProps> = ({ user }) => {
     return (
         <nav
             className={classes.navbar}>
+            <h1 className="uppercase text-4xl underline"><Link to="/">BRIDGE</Link></h1>
             <div className={classes.navigationContainer}>
 
 

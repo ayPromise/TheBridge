@@ -21,6 +21,6 @@ export const loader = async ({ request, params }: Omit<LoaderFunctionArgs, 'cont
 
     return chapter
   }catch(error){
-    return redirect("/")
+    redirect("/")
   }
 };

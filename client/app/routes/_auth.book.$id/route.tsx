@@ -22,7 +22,7 @@ import Epigraph from "./Epigraph"
 import ParagraphContent from "./ParagraphContent"
 import fetchDataJWT from "utils/fetchDataJWT"
 
-const serverURL = import.meta.env.VITE_STRAPI_BACKEND_URL
+const SERVER_URL = import.meta.env.VITE_STRAPI_BACKEND_URL
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     const jwt = await getJwt(request) // get jwt
@@ -34,13 +34,14 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
         // if book doesnt exist in redux
 
         const apiPath = `/api/books/${params.id}` // the path to api endpoint
-        const newURL = new URL(serverURL + apiPath) // build URL object
+        const newURL = new URL(SERVER_URL + apiPath) // build URL object
 
         try {
             book = await fetchDataJWT(newURL, jwt) // get book from database
 
             if (!book) // no book in database
                 return redirect("/")
+
         } catch {
             return redirect("/") // error means get out
         }

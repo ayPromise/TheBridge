@@ -1,4 +1,4 @@
-export default interface UserSession{
+export default interface IUserSession{
     id: number,
     documentId: string,
     username: string,

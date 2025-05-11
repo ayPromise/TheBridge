@@ -1,4 +1,4 @@
-export interface BookDescriptionBlock {
+export interface IBookDescriptionBlock {
   type: 'paragraph';
   children: {
     type: 'text';
@@ -6,7 +6,7 @@ export interface BookDescriptionBlock {
   }[];
 }
 
-export interface BookOwner {
+export interface IBookOwner {
   id: number;
   documentId: string;
   username: string;
@@ -23,17 +23,24 @@ export interface BookOwner {
   locale: string | null;
 }
 
-export interface Book {
+export interface IShortedChapter{
+  title:string,
+  id:number
+}
+
+export interface IBook {
   id: number;
   documentId: string;
   title: string;
   language: string;
-  description: BookDescriptionBlock[];
+  description: IBookDescriptionBlock[];
   createdAt: string;
   updatedAt: string;
   publishedAt: string | null;
   locale: string | null;
   slug: string;
   date: string | null;
-  owner: BookOwner;
+  owner: IBookOwner;
+
+  chapters: IShortedChapter[]
 }

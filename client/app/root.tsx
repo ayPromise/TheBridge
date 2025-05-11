@@ -29,6 +29,11 @@ import { useDispatch } from "react-redux";
 import type { IBook } from "types/Book";
 import type { Route } from "./+types/root";
 import type IUserSession from "types/User";
+import fetchDataJWT from "utils/fetchDataJWT";
+import type { AppDispatch } from "store";
+
+const SERVER_URL = import.meta.env.VITE_STRAPI_BACKEND_URL
+
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -58,37 +63,29 @@ export function Layout({ children }: { children: React.ReactNode }) {
     </html>
   );
 }
-const backendURL = import.meta.env.VITE_STRAPI_BACKEND_URL
-
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const user = await getUserSession(request)
-  const jwt = await getJwt(request)
 
-  const apiPath = `/api/books`
-  const newURL = new URL(backendURL + apiPath)
+  console.log(user)
 
   try {
-    const response = await fetch(newURL, {
-      headers: {
-        "Authorization": `Bearer ${jwt}`,
-        "Content-Type": "application/json"
-      }
-    })
+    const apiPath = `/api/books`
+    const newURL = new URL(SERVER_URL + apiPath)
+    const jwt = await getJwt(request)
+    const books = await fetchDataJWT(newURL, jwt)
 
-    const data = await response.json()
-
-    return { books: data.data as IBook[] | null, user: user as IUserSession | null }
+    return { books: books as IBook[] | [], user: user as IUserSession | null }
   } catch {
-    return redirect("/")
+    return { books: [], user: user as IUserSession | null }
   }
 }
 
 export default function App() {
   const { user, books } = useLoaderData<typeof loader>()
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
+  dispatch(setBooks(books))
 
-  dispatch(setBooks(books as IBook[]));
 
   return <Grid container spacing={2} className="bg-secondary-extraLight font-typo text-white">
     <NameLabel user={user} />

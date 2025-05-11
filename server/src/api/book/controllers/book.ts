@@ -8,7 +8,9 @@ export default factories.createCoreController('api::book.book', ({strapi})=>({
     async find(ctx){
         const user = ctx.state.user
         const books = await strapi.db.query('api::book.book').findMany({where:{owner:user.id}, populate:{
-            owner:true        }})
+            owner:true,
+        chapters:{select:['id','title']}
+            }})
         return ctx.send({data:books})
     },
 

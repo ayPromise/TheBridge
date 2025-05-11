@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @import "../../theme.css";
 .navbar{
-    @apply bg-main-extraLight pt-14 pb-6 px-10 h-screen text-main-extraDark font-main flex flex-col justify-between;
+    @apply bg-main-extraLight pt-14 pb-6 px-10 h-screen text-main-extraDark font-main flex flex-col justify-between sticky top-0
 }
 
 .navigationContainer{

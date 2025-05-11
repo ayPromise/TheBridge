@@ -1,63 +1,40 @@
-import { Link, useLocation } from "react-router"
-import classes from "./Navbar.module.css"
-import { Button } from "@mui/material"
-import type UserSession from "types/UserSession"
-import type { Book } from "types/Book"
-import { useSelector } from "react-redux"
+import { Link, useLocation } from "react-router";
+import classes from "./Navbar.module.css";
+
+// components
+import AuthLinks from "./components/AuthLinks";
+import BookSelection from "./components/BookSelection";
+import SignOutButton from "./components/SignOutButton";
+import Copyright from "./components/Copyright";
+
+// types
+import type IUserSession from "types/User";
 
 interface NavbarProps {
-    user: UserSession | null
+    user: IUserSession | null;
 }
 
 const Navbar: React.FC<NavbarProps> = ({ user }) => {
-    const books = useSelector(state => state.books.value as Book[])
-    const { pathname } = useLocation()
-
-    const onlyPublicLinks = [
-        {
-            title: 'Sign in',
-            href: '/sign-in'
-        },
-        {
-            title: 'Sign up',
-            href: '/sign-up'
-        }
-    ]
+    const { pathname } = useLocation();
 
     return (
-        <nav
-            className={classes.navbar}>
-            <h1 className="uppercase text-4xl underline"><Link to="/">BRIDGE</Link></h1>
+        <nav className={classes.navbar}>
+            <h1 className="uppercase text-4xl underline">
+                <Link to="/">BRIDGE</Link>
+            </h1>
+
             <div className={classes.navigationContainer}>
+                {!user && <AuthLinks currentPath={pathname} />}
 
-
-                <ul className={classes.navigationList}>
-                    {!user && onlyPublicLinks.map(((link, index) => (<li key={index} className={classes.navigationItem}>
-                        <Link to={link.href} className={link.href === pathname ? classes.active : ''}> {link.title}</Link>
-                    </li>)))}
-                </ul>
-
-
-                <ul className="flex flex-col gap-[20px]">
-                    {books && books.map((book, index) => {
-                        const pathnameID = Number(pathname.split("/").pop()) ?? -1
-                        return (<li key={index}><Link to={`book/${book.id}`} className={pathnameID === book.id ? classes.active : ''}>{book.title}</Link></li>)
-                    })
-                    }
-                </ul>
+                <BookSelection currentPath={pathname} />
             </div>
 
             <div className="flex flex-col gap-[50px]">
-                {user && <Link to={"/sign-out"}>
-                    <Button variant="contained" color="error" fullWidth>Sign Out</Button>
-                </Link>}
-
-                <div className={classes.copyright}>
-                    Copyright ©ayPromise
-                </div>
+                {user && <SignOutButton />}
+                <Copyright />
             </div>
         </nav>
-    )
-}
+    );
+};
 
-export default Navbar
+export default Navbar;

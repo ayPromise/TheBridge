@@ -11,15 +11,16 @@ interface AuthLinkProps {
 }
 
 const AuthLinks: React.FC<AuthLinkProps> = ({ currentPath }) => {
-    return links.map((link, index) => (
-        <ul className={classes.navigationList}>
+    return <ul className={classes.navigationList}>
+        {links.map((link, index) => (
+
             <li key={index} className={classes.navigationItem}>
                 <Link to={link.href} className={link.href === currentPath ? classes.active : ""}>
                     {link.title}
                 </Link>
             </li>
-        </ul>
-    ))
+        ))}
+    </ul>
 };
 
 export default AuthLinks;

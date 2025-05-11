@@ -2,7 +2,7 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 import type { IBook } from 'types/Book'
 
 interface BooksState {
-  value: IBook[]
+  value: IBook[] | []
 }
 
 const initialState: BooksState = {

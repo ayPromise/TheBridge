@@ -1,8 +1,8 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
-import type { Book } from 'types/Book'
+import type { IBook } from 'types/Book'
 
 interface BooksState {
-  value: Book[]
+  value: IBook[]
 }
 
 const initialState: BooksState = {
@@ -13,7 +13,7 @@ export const booksSlice = createSlice({
   name: 'books',
   initialState,
   reducers: {
-    setBooks:(state, action:PayloadAction<Book[]>)=>{
+    setBooks:(state, action:PayloadAction<IBook[]>)=>{
         state.value = action.payload
     },
 

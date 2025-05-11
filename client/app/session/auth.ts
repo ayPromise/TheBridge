@@ -1,6 +1,6 @@
 import { jwtDecode } from "jwt-decode"
 import { createCookieSessionStorage } from "react-router";
-import type UserSession from "types/UserSession"
+import type UserSession from "types/User"
 
 
 const { getSession, commitSession, destroySession } = createCookieSessionStorage({

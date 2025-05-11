@@ -10,17 +10,25 @@ import {
   type LoaderFunctionArgs,
 } from "react-router";
 
-import type { Route } from "./+types/root";
 import "./app.css"
-import Navbar from "./ui/Navbar/Navbar";
-import { Grid } from "@mui/material";
+
+// session
 import { getJwt, getUserSession } from "~/session/auth";
+
+// components
+import { Grid } from "@mui/material";
 import NameLabel from "components/NameLabel";
-import type { Book } from "types/Book";
-import type UserSession from "types/UserSession";
+import Navbar from "./ui/Navbar/Navbar";
+
+// redux
 import ReduxProvider from "store/ReduxProvider";
-import { useDispatch } from "react-redux";
 import { setBooks } from "features/books/booksSlice";
+import { useDispatch } from "react-redux";
+
+// types
+import type { IBook } from "types/Book";
+import type { Route } from "./+types/root";
+import type IUserSession from "types/User";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -70,7 +78,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
     const data = await response.json()
 
-    return { books: data.data as Book[] | null, user: user as UserSession | null }
+    return { books: data.data as IBook[] | null, user: user as IUserSession | null }
   } catch {
     return redirect("/")
   }
@@ -80,7 +88,7 @@ export default function App() {
   const { user, books } = useLoaderData<typeof loader>()
   const dispatch = useDispatch()
 
-  dispatch(setBooks(books as Book[]));
+  dispatch(setBooks(books as IBook[]));
 
   return <Grid container spacing={2} className="bg-secondary-extraLight font-typo text-white">
     <NameLabel user={user} />

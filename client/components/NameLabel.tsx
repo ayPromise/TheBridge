@@ -1,5 +1,5 @@
 import React from 'react'
-import type UserSession from 'types/UserSession'
+import type UserSession from 'types/User'
 
 interface NameLabelProps {
     user: UserSession | null

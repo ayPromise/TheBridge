@@ -1,18 +1,19 @@
 {
-  "collectionName": "components_book_epigraphs",
+  "collectionName": "components_book_notes",
   "info": {
-    "displayName": "Epigraph",
-    "icon": "pencil",
+    "displayName": "note",
+    "icon": "book",
     "description": ""
   },
   "options": {},
   "attributes": {
-    "author": {
+    "title": {
       "type": "string",
       "required": true
     },
     "paragraphs": {
-      "type": "json"
+      "type": "json",
+      "required": true
     }
   }
 }

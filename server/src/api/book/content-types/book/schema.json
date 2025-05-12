@@ -15,28 +15,6 @@
       "type": "string",
       "required": true
     },
-    "language": {
-      "type": "string"
-    },
-    "coverImage": {
-      "type": "media",
-      "multiple": true,
-      "required": false,
-      "allowedTypes": [
-        "images",
-        "files",
-        "videos",
-        "audios"
-      ]
-    },
-    "description": {
-      "type": "blocks"
-    },
-    "slug": {
-      "type": "uid",
-      "targetField": "title",
-      "required": true
-    },
     "chapters": {
       "type": "relation",
       "relation": "oneToMany",
@@ -52,6 +30,12 @@
     },
     "date": {
       "type": "integer"
+    },
+    "notes": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::note.note",
+      "mappedBy": "book"
     },
     "owner": {
       "type": "relation",

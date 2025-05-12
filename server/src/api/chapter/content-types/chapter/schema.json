@@ -15,15 +15,6 @@
       "type": "string",
       "required": true
     },
-    "slug": {
-      "type": "uid",
-      "targetField": "title",
-      "required": true
-    },
-    "rawContent": {
-      "type": "blocks",
-      "required": true
-    },
     "book": {
       "type": "relation",
       "relation": "manyToOne",
@@ -35,6 +26,9 @@
       "type": "component",
       "repeatable": false,
       "component": "book.epigraph"
+    },
+    "paragraphs": {
+      "type": "json"
     }
   }
 }

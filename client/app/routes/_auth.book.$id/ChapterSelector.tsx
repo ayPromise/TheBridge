@@ -11,12 +11,13 @@ import type { AppDispatch, RootState } from 'store'
 
 interface ChapterSelectorProps {
     book: IBook,
+    currentChapter: IChapter,
     setCurrentChapter: React.Dispatch<React.SetStateAction<IChapter>>
 }
 
 const CLIENT_URL = import.meta.env.VITE_CLIENT_URL
 
-const ChapterSelector: React.FC<ChapterSelectorProps> = ({ book, setCurrentChapter }) => {
+const ChapterSelector: React.FC<ChapterSelectorProps> = ({ book, setCurrentChapter, currentChapter }) => {
     const dispatch = useDispatch<AppDispatch>()
     const chapters = useSelector((state: RootState) => state.chapters.value) as IChapter[]
 
@@ -37,12 +38,12 @@ const ChapterSelector: React.FC<ChapterSelectorProps> = ({ book, setCurrentChapt
     }
 
     return (
-        <div className="flex gap-4 mb-8 flex-wrap">
-            {book.chapters.map((ch, index) => (
+        <div className="flex gap-1 mb-8 flex-wrap">
+            {book.chapters && book.chapters.map((ch, index) => (
                 <button
                     key={index}
                     onClick={() => handleClick(ch.id)}
-                    className="text-red-600 hover:underline font-medium"
+                    className={`border-2 font-bold hover:underline p-1 ${currentChapter.id === ch.id ? "bg-white text-black" : "text-white "}`}
                 >
                     {ch.title}
                 </button>

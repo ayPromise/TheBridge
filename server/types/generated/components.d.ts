@@ -23,8 +23,30 @@ export interface BookEpigraph extends Struct.ComponentSchema {
   };
   attributes: {
     author: Schema.Attribute.String & Schema.Attribute.Required;
-    rawContent: Schema.Attribute.Blocks & Schema.Attribute.Required;
+    paragraphs: Schema.Attribute.JSON;
   };
+}
+
+export interface BookNote extends Struct.ComponentSchema {
+  collectionName: 'components_book_notes';
+  info: {
+    description: '';
+    displayName: 'note';
+    icon: 'book';
+  };
+  attributes: {
+    paragraphs: Schema.Attribute.JSON & Schema.Attribute.Required;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
+export interface BookParagraph extends Struct.ComponentSchema {
+  collectionName: 'components_book_paragraphs';
+  info: {
+    displayName: 'Paragraph';
+    icon: 'bulletList';
+  };
+  attributes: {};
 }
 
 export interface SharedMedia extends Struct.ComponentSchema {
@@ -94,6 +116,8 @@ declare module '@strapi/strapi' {
     export interface ComponentSchemas {
       'book.author': BookAuthor;
       'book.epigraph': BookEpigraph;
+      'book.note': BookNote;
+      'book.paragraph': BookParagraph;
       'shared.media': SharedMedia;
       'shared.quote': SharedQuote;
       'shared.rich-text': SharedRichText;

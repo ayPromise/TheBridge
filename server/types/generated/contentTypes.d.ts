@@ -384,25 +384,19 @@ export interface ApiBookBook extends Struct.CollectionTypeSchema {
     author: Schema.Attribute.Component<'book.author', false> &
       Schema.Attribute.Required;
     chapters: Schema.Attribute.Relation<'oneToMany', 'api::chapter.chapter'>;
-    coverImage: Schema.Attribute.Media<
-      'images' | 'files' | 'videos' | 'audios',
-      true
-    >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     date: Schema.Attribute.Integer;
-    description: Schema.Attribute.Blocks;
-    language: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::book.book'> &
       Schema.Attribute.Private;
+    notes: Schema.Attribute.Relation<'oneToMany', 'api::note.note'>;
     owner: Schema.Attribute.Relation<
       'manyToOne',
       'plugin::users-permissions.user'
     >;
     publishedAt: Schema.Attribute.DateTime;
-    slug: Schema.Attribute.UID<'title'> & Schema.Attribute.Required;
     title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -433,10 +427,36 @@ export interface ApiChapterChapter extends Struct.CollectionTypeSchema {
       'api::chapter.chapter'
     > &
       Schema.Attribute.Private;
+    paragraphs: Schema.Attribute.JSON;
     publishedAt: Schema.Attribute.DateTime;
-    rawContent: Schema.Attribute.Blocks & Schema.Attribute.Required;
-    slug: Schema.Attribute.UID<'title'> & Schema.Attribute.Required;
     title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiNoteNote extends Struct.CollectionTypeSchema {
+  collectionName: 'notes';
+  info: {
+    description: '';
+    displayName: 'Note';
+    pluralName: 'notes';
+    singularName: 'note';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    book: Schema.Attribute.Relation<'manyToOne', 'api::book.book'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::note.note'> &
+      Schema.Attribute.Private;
+    notes: Schema.Attribute.JSON & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -954,6 +974,7 @@ declare module '@strapi/strapi' {
       'admin::user': AdminUser;
       'api::book.book': ApiBookBook;
       'api::chapter.chapter': ApiChapterChapter;
+      'api::note.note': ApiNoteNote;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

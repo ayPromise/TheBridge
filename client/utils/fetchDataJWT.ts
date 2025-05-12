@@ -1,26 +1,31 @@
-const fetchDataJWT = async (url: URL, jwt:string|null )=>{
-    try {
-        const response = await fetch(url, {
-            headers: {
-                "Authorization": `Bearer ${jwt}`,
-                "Content-Type": "application/json"
-            }
-        })
+const fetchDataJWT = async (
+  url: URL,
+  jwt: string | null,
+  method: 'GET' | 'POST' = 'GET',
+  body?: any
+) => {
+  try {
+    const response = await fetch(url.toString(), {
+      method,
+      headers: {
+        Authorization: jwt ? `Bearer ${jwt}` : '',
+        'Content-Type': 'application/json',
+      },
+      body: method === 'POST' && body ? JSON.stringify(body) : undefined,
+    });
 
-        if (!response.ok) {
-            throw new Error(`Failed to fetch: ${response.status}`);
-        }
-
-        let data = await response.json()
-
-        if(data.data)
-            data = data.data
-
-        return data
-    } catch(error) {
-        console.error(error)
-        throw new Error(`An error occured while fetching data`)
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Failed to fetch: ${response.status} - ${JSON.stringify(errorData)}`);
     }
-}
 
-export default fetchDataJWT
+    let data = await response.json();
+    if (data.data) data = data.data;
+
+    return data;
+  } catch (error) {
+    throw new Error('An error occurred while fetching data');
+  }
+};
+
+export default fetchDataJWT;

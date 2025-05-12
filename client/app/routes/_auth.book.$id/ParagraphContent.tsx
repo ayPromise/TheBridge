@@ -1,24 +1,17 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 
-// types
-import type { IParagraphBlock } from "types/Chapter";
 
-const ParagraphContent: React.FC<{ block: IParagraphBlock }> = ({ block }) => {
+const ParagraphContent: React.FC<{ list: string[] | string }> = ({ list }) => {
+    if (list && typeof list === "string")
+        return <p className="mb-4 leading-relaxed text-justify">{list}</p>
 
-    //! I don't know why there is only one child in paragraph
-    let onlyChild = block.children[0]
-    const paragraphRef = useRef<HTMLParagraphElement | null>(null)
-
-    useEffect(() => {
-        if (paragraphRef.current) {
-            const newValue = onlyChild.text.replace(/\[[^\]]*\]/g, "") // removing [1], [2], ... anchors
-            paragraphRef.current.innerHTML = newValue;
-        }
-    }, [onlyChild.text]);
-
-    return (
-        <p className="mb-4 leading-relaxed text-justify" ref={paragraphRef}></p>
-    );
+    if (list && typeof list === "object")
+        return list.map((paragraph: string | { a: any, "#text": string }, index) => {
+            let text = paragraph
+            if (paragraph["#text"])
+                text = paragraph["#text"]
+            return <p key={index} className="mb-4 leading-relaxed text-justify">{String(text)}</p>
+        })
 };
 
 export default ParagraphContent

@@ -71,7 +71,7 @@ const BookPage: React.FC = () => {
             <h1 className="text-3xl font-bold mb-6">{book.title}</h1>
 
             {/** Selection Tab for Chapters */}
-            <ChapterSelector book={book} setCurrentChapter={setCurrentChapter} />
+            <ChapterSelector book={book} setCurrentChapter={setCurrentChapter} currentChapter={currentChapter} />
 
             {/** Chapter Content */}
             <div>
@@ -81,9 +81,7 @@ const BookPage: React.FC = () => {
                 <Epigraph epigraphData={currentChapter.epigraph} />
 
                 {/** Text itself */}
-                {currentChapter.rawContent.map((block, i) =>
-                    <ParagraphContent key={i} block={block} />
-                )}
+                <ParagraphContent list={currentChapter.paragraphs} />
             </div>
         </div>
 

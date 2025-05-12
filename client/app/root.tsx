@@ -67,8 +67,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const user = await getUserSession(request)
 
-  console.log(user)
-
   try {
     const apiPath = `/api/books`
     const newURL = new URL(SERVER_URL + apiPath)

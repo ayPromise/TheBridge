@@ -9,6 +9,7 @@ import Copyright from "./components/Copyright";
 
 // types
 import type IUserSession from "types/User";
+import ImportButton from "components/ImportButton";
 
 interface NavbarProps {
     user: IUserSession | null;
@@ -30,6 +31,7 @@ const Navbar: React.FC<NavbarProps> = ({ user }) => {
             </div>
 
             <div className="flex flex-col gap-[50px]">
+                {user && <ImportButton />}
                 {user && <SignOutButton />}
                 <Copyright />
             </div>

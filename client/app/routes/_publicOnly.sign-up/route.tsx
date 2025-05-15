@@ -7,6 +7,7 @@ import {
     TextField,
 } from "@mui/material";
 import OAuthButtons from "components/OAuthButtons";
+import { serverAPIRoutes } from "consts/endpoints";
 import { useState } from "react";
 import { type ActionFunctionArgs, redirect, useActionData, useNavigation } from "react-router";
 import { setUserSession } from "~/session/auth";
@@ -20,6 +21,7 @@ interface FormState {
 interface ActionData {
     error?: string;
 }
+const SERVER_URL = import.meta.env.VITE_STRAPI_BACKEND_URL;
 
 export const action = async ({ request }: ActionFunctionArgs) => {
     const formData = await request.formData();
@@ -32,8 +34,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         return { error: "All fields are required" } as ActionData;
     }
 
-    const backendUrl = import.meta.env.VITE_STRAPI_BACKEND_URL;
-    const path = `${backendUrl}/api/auth/local/register`;
+    const path = new URL(`${SERVER_URL}${serverAPIRoutes.signUp}`);
 
     try {
         const response = await fetch(path, {

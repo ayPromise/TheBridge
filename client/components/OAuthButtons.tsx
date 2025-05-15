@@ -2,8 +2,10 @@ import { Button } from '@mui/material'
 import React from 'react'
 import GoogleIcon from '@mui/icons-material/Google';
 import GithubIcon from '@mui/icons-material/GitHub';
+import { redirect } from 'react-router';
+import { clientAPIRoutes } from 'consts/endpoints';
 
-const backendUrl = import.meta.env.VITE_STRAPI_BACKEND_URL;
+const SERVER_URL = import.meta.env.VITE_STRAPI_BACKEND_URL;
 
 
 interface OAuthButtonsProps {
@@ -15,10 +17,8 @@ const OAuthButtons: React.FC<OAuthButtonsProps> = ({ loadingRequest, setLoadingR
 
     const handleLogin = (provider: 'google' | 'github') => {
         setLoadingRequest(true)
-
-        const url = new URL(backendUrl + `/api/connect/${provider}`)
-        window.location.href = url.href
-
+        const url = SERVER_URL + clientAPIRoutes.OAuthConnect(provider)
+        redirect(url)
         setLoadingRequest(false)
     };
 

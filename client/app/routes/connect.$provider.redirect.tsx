@@ -1,4 +1,5 @@
 import { CircularProgress } from "@mui/material";
+import { serverAPIRoutes } from "consts/endpoints";
 import { type LoaderFunctionArgs, redirect, useLoaderData } from "react-router";
 import { setUserSession } from "~/session/auth";
 
@@ -6,6 +7,7 @@ interface CustomError {
     error: string,
     status: number
 }
+const SEVER_URL = import.meta.env.VITE_STRAPI_BACKEND_URL;
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     const { provider } = params;
@@ -16,9 +18,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
         return { error: "Missing access token or provider", status: 400 };
     }
 
-    const backendUrl = import.meta.env.VITE_STRAPI_BACKEND_URL;
-    const path = `/api/auth/${provider}/callback`;
-    const newUrl = new URL(backendUrl + path)
+    const newUrl = new URL(SEVER_URL + serverAPIRoutes.OAuthConnect(provider as string))
     newUrl.searchParams.append("access_token", accessToken)
 
     try {

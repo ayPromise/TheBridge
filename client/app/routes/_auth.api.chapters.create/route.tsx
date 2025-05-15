@@ -1,3 +1,4 @@
+import { serverAPIRoutes } from "consts/endpoints";
 import fetchDataJWT from "utils/fetchDataJWT";
 import { getJwt } from "~/session/auth";
 
@@ -11,7 +12,7 @@ export const action = async ({ request }: { request: Request }) => {
 
     try {
         const createdChapter = await fetchDataJWT(
-            new URL(`${SERVER_URL}/api/chapters`),
+            new URL(`${SERVER_URL}${serverAPIRoutes.chapters}`),
             jwt,
             "POST",
             restBody

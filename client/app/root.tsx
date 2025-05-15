@@ -31,6 +31,7 @@ import type { Route } from "./+types/root";
 import type IUserSession from "types/User";
 import fetchDataJWT from "utils/fetchDataJWT";
 import type { AppDispatch } from "store";
+import { serverAPIRoutes } from "consts/endpoints";
 
 const SERVER_URL = import.meta.env.VITE_STRAPI_BACKEND_URL
 
@@ -68,10 +69,11 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const user = await getUserSession(request)
 
   try {
-    const apiPath = `/api/books`
-    const newURL = new URL(SERVER_URL + apiPath)
+    const newURL = new URL(`${SERVER_URL}${serverAPIRoutes.books}`)
     const jwt = await getJwt(request)
     const books = await fetchDataJWT(newURL, jwt)
+
+    console.log(books)
 
     return { books: books as IBook[] | [], user: user as IUserSession | null }
   } catch {

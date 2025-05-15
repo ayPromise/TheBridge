@@ -21,6 +21,7 @@ import ChapterSelector from "./ChapterSelector"
 import Epigraph from "./Epigraph"
 import ParagraphContent from "./ParagraphContent"
 import fetchDataJWT from "utils/fetchDataJWT"
+import { serverAPIRoutes } from "consts/endpoints"
 
 const SERVER_URL = import.meta.env.VITE_STRAPI_BACKEND_URL
 
@@ -33,7 +34,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     if (!book) {
         // if book doesnt exist in redux
 
-        const apiPath = `/api/books/${params.id}` // the path to api endpoint
+        const apiPath = serverAPIRoutes.bookById(params.id as string) // the path to api endpoint
         const newURL = new URL(SERVER_URL + apiPath) // build URL object
 
         try {

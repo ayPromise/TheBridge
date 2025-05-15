@@ -5,6 +5,7 @@ import { getJwt } from "~/session/auth";
 
 // utils
 import fetchDataJWT from "utils/fetchDataJWT";
+import { serverAPIRoutes } from "consts/endpoints";
 
 // .env
 const SERVER_URL = import.meta.env.VITE_STRAPI_BACKEND_URL;
@@ -13,7 +14,7 @@ export const loader = async ({ request, params }: Omit<LoaderFunctionArgs, 'cont
   const jwt = await getJwt(request); // get jwt
 
   try{
-    const apiPath = `/api/books/${params.bookId}/chapters/${params.id}` // the path to api endpoint
+    const apiPath = serverAPIRoutes.chapterOfBook(params.bookId as string, params.id as string) // the path to api endpoint
     const newURL = new URL(SERVER_URL+apiPath) // build URL object
     const chapter = await fetchDataJWT(newURL, jwt) // get chapter of book by id from database
     

@@ -4,6 +4,7 @@ import { useEffect, useState, type ChangeEvent } from 'react'
 import { XMLParser } from 'fast-xml-parser'
 import type { FB2_IAuthor, FB2_IBook, FB2_IChapter, FB2_INote, FB2_ITitleInfo } from 'types/FB2File'
 import { useFetcher } from 'react-router'
+import { clientAPIRoutes } from 'consts/endpoints'
 
 
 export interface IBookMutate {
@@ -66,7 +67,6 @@ const ImportButton = () => {
     const handleChaptersCreation = async (documentId: number) => {
         if (bookData) {
             const chapters = bookData?.body[0].section as FB2_IChapter[]
-            const pathApi = '/api/chapters/create'
 
             chapters.forEach((ch) => {
                 const epigraph = {
@@ -90,7 +90,7 @@ const ImportButton = () => {
                 fetcher.submit(JSON.stringify(chapterForMutation),
                     {
                         method: 'POST',
-                        action: pathApi,
+                        action: clientAPIRoutes.createChapters,
                         encType: 'application/json',
                     })
             })
@@ -110,12 +110,10 @@ const ImportButton = () => {
                 },
                 entityType: 'notes',
             }
-
-            const pathApi = '/api/notes/create'
             fetcher.submit(JSON.stringify(noteForMutation),
                 {
                     method: 'POST',
-                    action: pathApi,
+                    action: clientAPIRoutes.createNotes,
                     encType: 'application/json',
                 })
 
@@ -138,11 +136,9 @@ const ImportButton = () => {
 
             }
 
-            const pathApi = 'api/books/create'
-
             fetcher.submit(JSON.stringify(titleForMutation), {
                 method: "POST",
-                action: pathApi,
+                action: clientAPIRoutes.createBook,
                 encType: 'application/json',
             })
         }

@@ -1,3 +1,4 @@
+import { serverAPIRoutes } from "consts/endpoints";
 import type IUserSession from "types/User";
 import fetchDataJWT from "utils/fetchDataJWT";
 import { getJwt, getUserSession } from "~/session/auth";
@@ -13,15 +14,18 @@ export const action = async ({ request }: { request: Request }) => {
     const newBodyWithOwner = {
         data: {
             ...restBody.data,
+            owner: {
+                connect: { id: user.id }
+            }
         }
     }
 
     try {
         const createdBook = await fetchDataJWT(
-            new URL(`${SERVER_URL}/api/books`),
+            new URL(`${SERVER_URL}${serverAPIRoutes.books}`),
             jwt,
             "POST",
-            restBody
+            newBodyWithOwner
         );
 
         return { id: createdBook.id, entityType, ...createdBook };

@@ -1,3 +1,4 @@
+import { serverAPIRoutes } from "consts/endpoints";
 import fetchDataJWT from "utils/fetchDataJWT";
 import { getJwt } from "~/session/auth";
 
@@ -10,7 +11,7 @@ export const action = async ({ request }: { request: Request }) => {
     const { entityType, ...restBody } = body;
     try {
         const createdNotes = await fetchDataJWT(
-            new URL(`${SERVER_URL}/api/notes`),
+            new URL(`${SERVER_URL}${serverAPIRoutes.notes}`),
             jwt,
             "POST",
             restBody

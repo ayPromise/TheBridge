@@ -3,9 +3,9 @@
  */
 
 import { factories } from '@strapi/strapi'
-import book from '../../book/controllers/book';
 
 export default factories.createCoreController('api::chapter.chapter', ({strapi})=>({
+    // user
     async findOne(ctx){
         const user = ctx.state.user
         const chapterId = ctx.params.id
@@ -23,24 +23,20 @@ export default factories.createCoreController('api::chapter.chapter', ({strapi})
         return ctx.send({ data: chapter });
     },
 
-    async find(ctx){
-        const user = ctx.state.user
-        const bookId = ctx.params.id
-        const chapters = await strapi.db.query('api::chapter.chapter').findMany({where:{book:{id:bookId}},  
+    // admin
+    async findAll(ctx){
+        const chapters = await strapi.db.query('api::chapter.chapter').findMany({where:{},  
         
             populate: { book: { populate: ['owner'] } }})
 
-        if (!chapters) {
+        if (chapters.length < 0) {
             return ctx.notFound('No chapters were found');
         }
-
-        if(chapters[0].book.owner.id !== user.id)
-            return ctx.unauthorized('You have no access to that book')
 
         return ctx.send({ data: chapters });
     },
 
-
+    // user
     async findChapter(ctx){
         const user = ctx.state.user;
         const bookId = ctx.params.bookId
@@ -57,6 +53,17 @@ export default factories.createCoreController('api::chapter.chapter', ({strapi})
             return ctx.unauthorized("You have no access to that book")
 
         return ctx.send({data:chapter})
-    }
+    },
+
+    // admin
+    async deleteAll(ctx) {
+        try {
+          const result = await strapi.db.query('api::chapter.chapter').deleteMany();
+          ctx.send({ message: 'All chapters deleted', result });
+        } catch (error) {
+          ctx.throw(500, 'Failed to delete chapters');
+        }
+      }
+
 }));
 

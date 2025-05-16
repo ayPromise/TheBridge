@@ -382,7 +382,7 @@ export interface ApiBookBook extends Struct.CollectionTypeSchema {
     singularName: 'book';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     author: Schema.Attribute.Component<'book.author', false> &
@@ -418,7 +418,7 @@ export interface ApiChapterChapter extends Struct.CollectionTypeSchema {
     singularName: 'chapter';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     book: Schema.Attribute.Relation<'manyToOne', 'api::book.book'>;
@@ -450,7 +450,7 @@ export interface ApiNoteNote extends Struct.CollectionTypeSchema {
     singularName: 'note';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     book: Schema.Attribute.Relation<'manyToOne', 'api::book.book'>;

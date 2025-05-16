@@ -1,7 +1,7 @@
 const fetchDataJWT = async (
   url: URL,
   jwt: string | null,
-  method: 'GET' | 'POST' = 'GET',
+  method: 'GET' | 'POST' | 'DELETE' = 'GET',
   body?: any
 ) => {
   try {

@@ -1,4 +1,4 @@
-import { redirect, useLoaderData, type LoaderFunctionArgs } from "react-router"
+import { redirect, useFetcher, useLoaderData, type LoaderFunctionArgs } from "react-router"
 import { useEffect, useState } from "react"
 
 // external loader
@@ -21,10 +21,11 @@ import ChapterSelector from "./ChapterSelector"
 import Epigraph from "./Epigraph"
 import ParagraphContent from "./ParagraphContent"
 import fetchDataJWT from "utils/fetchDataJWT"
-import { serverAPIRoutes } from "consts/endpoints"
+import { clientAPIRoutes, serverAPIRoutes } from "consts/endpoints"
+import { Button } from "@mui/material"
 
 const SERVER_URL = import.meta.env.VITE_STRAPI_BACKEND_URL
-
+const CLIENT_URL = import.meta.env.VITE_CLIENT_URL
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     const jwt = await getJwt(request) // get jwt
     const books = store.getState().books.value; // get books in redux store
@@ -63,15 +64,27 @@ const BookPage: React.FC = () => {
     const { book, initialChapter } = useLoaderData<typeof loader>() // get book and first loaded chapter
     const [currentChapter, setCurrentChapter] = useState<IChapter | null>(initialChapter) // state for current chapter
     const dispatch = useDispatch() // dispatch from redux
-
+    const fetcher = useFetcher()
     useEffect(() => {
         if (initialChapter)
             dispatch(setChapters([initialChapter])) // on first render we upload chapters to redux
     }, [])
 
+    const handleRemove = () => {
+        fetcher.submit(null, {
+            method: "DELETE",
+            action: clientAPIRoutes.deleteBook(String(book.id))
+        })
+
+        return redirect("/")
+    }
+
 
     return (
-        <div className="p-6 max-w-3xl mx-auto">
+        <div className="p-6 max-w-3xl mx-auto relative">
+            <div className="absolute -right-[150px]">
+                <Button variant="contained" color="error" onClick={handleRemove}>Remove the book</Button>
+            </div>
             <h1 className="text-3xl font-bold mb-6">{book.title}</h1>
 
             {

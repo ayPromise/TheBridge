@@ -13,5 +13,6 @@ export const serverAPIRoutes = {
   export const clientAPIRoutes = {
     createBook: `/api/books/create`,
     createChapters: `/api/chapters/create`,
-    createNotes: `/api/notes/create`
+    createNotes: `/api/notes/create`,
+    deleteBook: (bookId: string)=>`/api/books/${bookId}/delete`
   }

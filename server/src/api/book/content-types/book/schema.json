@@ -42,6 +42,10 @@
       "relation": "manyToOne",
       "target": "plugin::users-permissions.user",
       "inversedBy": "books"
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "title"
     }
   }
 }

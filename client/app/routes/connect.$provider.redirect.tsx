@@ -18,7 +18,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
         return { error: "Missing access token or provider", status: 400 };
     }
 
-    const newUrl = new URL(SEVER_URL + serverAPIRoutes.OAuthConnect(provider as string))
+    const newUrl = new URL(SEVER_URL + serverAPIRoutes.OAuthConnectFinal(provider as string))
     newUrl.searchParams.append("access_token", accessToken)
 
     try {

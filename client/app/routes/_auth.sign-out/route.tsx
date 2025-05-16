@@ -8,5 +8,5 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     const headers = await clearUserSession(request);
     store.dispatch(clearBooks())
     store.dispatch(clearChapters())
-    return redirect("/sign-in", { headers });
+    return redirect("/", { headers });
 };

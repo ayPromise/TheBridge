@@ -6,11 +6,11 @@ export const serverAPIRoutes = {
     signUp: '/api/auth/local/register',
     chapterOfBook: (bookId:string, chapterId:string)=> `/api/books/${bookId}/chapters/${chapterId}`,
     bookById: (bookId: string) => `/api/books/${bookId}`,
-    OAuthConnect: (provider:string) => `/api/auth/${provider}/callback`
+    OAuthConnectStart: (provider:string) => `/api/connect/${provider}`,
+    OAuthConnectFinal: (provider:string) => `/api/auth/${provider}/callback`
   } as const;
 
   export const clientAPIRoutes = {
-    OAuthConnect: (provider:string)=> `/api/connect/${provider}`,
     createBook: `/api/books/create`,
     createChapters: `/api/chapters/create`,
     createNotes: `/api/notes/create`

@@ -8,7 +8,6 @@ export default factories.createCoreRouter('api::chapter.chapter', {
   config:{
     find:{
       policies:['global::is-authenticated'],
-      
     },
     findOne:{
       policies:['global::is-authenticated']

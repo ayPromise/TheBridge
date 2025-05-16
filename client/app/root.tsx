@@ -73,8 +73,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     const jwt = await getJwt(request)
     const books = await fetchDataJWT(newURL, jwt)
 
-    console.log(books)
-
     return { books: books as IBook[] | [], user: user as IUserSession | null }
   } catch {
     return { books: [], user: user as IUserSession | null }

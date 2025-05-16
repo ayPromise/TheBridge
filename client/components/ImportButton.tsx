@@ -1,44 +1,29 @@
-import { Button, styled } from '@mui/material'
-import AddBoxIcon from '@mui/icons-material/AddBox'
 import { useEffect, useState, type ChangeEvent } from 'react'
 import { XMLParser } from 'fast-xml-parser'
-import type { FB2_IAuthor, FB2_IBook, FB2_IChapter, FB2_INote, FB2_ITitleInfo } from 'types/FB2File'
-import { useFetcher } from 'react-router'
+
+// consts
 import { clientAPIRoutes } from 'consts/endpoints'
 
+// hooks
+import useFetcherSubmit from 'hooks/useFetcherSubmit'
 
-export interface IBookMutate {
-    title: string;
-    chapters: FB2_IChapter[] | [];
-    notes: FB2_INote[] | [];
-    author: FB2_IAuthor | null;
+// components
+import AddBoxIcon from '@mui/icons-material/AddBox'
+import { Button } from '@mui/material'
+import VisuallyHiddenInput from './VisuallyHiddenInput'
 
-}
-
-const VisuallyHiddenInput = styled('input')({
-    clip: 'rect(0 0 0 0)',
-    clipPath: 'inset(50%)',
-    height: 1,
-    overflow: 'hidden',
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    whiteSpace: 'nowrap',
-    width: 1,
-})
+// types
+import type { FB2_IBook, FB2_IChapter, FB2_INote } from 'types/FB2File'
+import type { IBookPayload, IChaptersPayload, INotesPayload, Payload } from 'types/Payloads'
 
 const ImportButton = () => {
     const [bookData, setBookData] = useState<FB2_IBook | null>(null)
-    const fetcher = useFetcher();
+    const { fetcher, submit } = useFetcherSubmit()
 
     useEffect(() => {
-        if (fetcher.data) {
-            if (fetcher.data.id) {
-                if (fetcher.data.entityType === 'book') {
-                    handleNotesExctraction(fetcher.data.documentId)
-                    handleChaptersCreation(fetcher.data.documentId)
-                }
-            }
+        if (fetcher.data && fetcher.data.id && fetcher.data.entityType === 'book') {
+            handleNotesCreation(fetcher.data.documentId)
+            handleChaptersCreation(fetcher.data.documentId)
         }
     }, [fetcher.data]);
 
@@ -64,44 +49,42 @@ const ImportButton = () => {
         reader.readAsText(file)
     }
 
-    const handleChaptersCreation = async (documentId: number) => {
+    const handleChaptersCreation = (documentId: number): void => {
         if (bookData) {
             const chapters = bookData?.body[0].section as FB2_IChapter[]
 
             chapters.forEach((ch) => {
-                const epigraph = {
-                    author: ch.epigraph?.['text-author'],
-                    paragraphs: ch.epigraph?.p
-                }
-                let chapterForMutation = {
-                    data: {
-                        title: ch.title.p,
-                        paragraphs: ch.p,
-                        book: {
-                            connect: [{ documentId, status: 'draft' }, { documentId, status: 'published' }]
-                        },
-                    },
-                    entityType: 'chapter',
-                }
 
-                if (epigraph.author || epigraph.paragraphs)
-                    chapterForMutation.data.epigraph = epigraph
+                const data: IChaptersPayload = {
+                    title: ch.title.p,
+                    paragraphs: ch.p,
+                    book: {
+                        connect: [{ documentId, status: 'draft' }, { documentId, status: 'published' }]
+                    }
+                };
 
-                fetcher.submit(JSON.stringify(chapterForMutation),
-                    {
-                        method: 'POST',
-                        action: clientAPIRoutes.createChapters,
-                        encType: 'application/json',
-                    })
-            })
+                if (ch.epigraph?.['text-author'] || ch.epigraph?.p)
+                    data.epigraph = {
+                        author: ch.epigraph?.['text-author'],
+                        paragraphs: ch.epigraph?.p,
+                    }
 
+                let chapterPayload: Payload<IChaptersPayload> = {
+                    data: data,
+                    entityType: "chapter"
+                };
+
+                submit(chapterPayload, clientAPIRoutes.createChapters)
+            });
         }
     }
 
-    const handleNotesExctraction = (documentId: number) => {
+    const handleNotesCreation = (documentId: number): void => {
         if (bookData) {
             const notes = bookData?.body[1].section as FB2_INote[]
-            let noteForMutation = {
+            if (!notes) return
+
+            const notesPayload: Payload<INotesPayload> = {
                 data: {
                     book: {
                         connect: [{ documentId, status: 'draft' }, { documentId, status: 'published' }]
@@ -110,20 +93,18 @@ const ImportButton = () => {
                 },
                 entityType: 'notes',
             }
-            fetcher.submit(JSON.stringify(noteForMutation),
-                {
-                    method: 'POST',
-                    action: clientAPIRoutes.createNotes,
-                    encType: 'application/json',
-                })
+
+            submit(notesPayload, clientAPIRoutes.createNotes)
 
         }
     }
 
-    const handleTitleInfoExtraction = () => {
+    const handleBookCreation = (): void => {
         if (bookData) {
+
             const titleInfo = bookData.description["title-info"]
-            const titleForMutation = {
+
+            const bookPayload: Payload<IBookPayload> = {
                 data: {
                     title: titleInfo["book-title"],
                     author: {
@@ -133,20 +114,15 @@ const ImportButton = () => {
                     },
                 },
                 entityType: 'book'
-
             }
 
-            fetcher.submit(JSON.stringify(titleForMutation), {
-                method: "POST",
-                action: clientAPIRoutes.createBook,
-                encType: 'application/json',
-            })
+            submit(bookPayload, clientAPIRoutes.createBook)
         }
     }
 
     useEffect(() => {
         if (bookData) {
-            handleTitleInfoExtraction(); // Create book first
+            handleBookCreation(); // Create book first
         }
     }, [bookData]);
 

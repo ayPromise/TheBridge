@@ -7,7 +7,7 @@ import { factories } from '@strapi/strapi'
 export default factories.createCoreController('api::book.book', ({strapi})=>({
     async find(ctx){
         const user = ctx.state.user
-        const books = await strapi.db.query('api::book.book').findMany({where:{owner:user.id}, populate:{
+        const books = await strapi.db.query('api::book.book').findMany({where:{owner:user.id, publishedAt: { $not: null }}, populate:{
             owner:true,
         chapters:{select:['id','title']}
             }})
@@ -17,7 +17,7 @@ export default factories.createCoreController('api::book.book', ({strapi})=>({
     async findOne(ctx){
         const user = ctx.state.user
         const bookId = ctx.params.id
-        const book = await strapi.db.query('api::book.book').findOne({where:{id:bookId}, populate:{
+        const book = await strapi.db.query('api::book.book').findOne({where:{id:bookId, publishedAt: { $not: null }}, populate:{
             owner:true,
             chapters:{select:['id','title']}
         }})

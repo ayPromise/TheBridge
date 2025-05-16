@@ -28,11 +28,11 @@ const SERVER_URL = import.meta.env.VITE_STRAPI_BACKEND_URL
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     const jwt = await getJwt(request) // get jwt
     const books = store.getState().books.value; // get books in redux store
-    let book = books.find((book) => book.id === Number(params.id)); // get book we search for in redux
-
+    let book: IBook | undefined = books.find((book) => book.id === Number(params.id)); // get book we search for in redux
 
     if (!book) {
         // if book doesnt exist in redux
+
 
         const apiPath = serverAPIRoutes.bookById(params.id as string) // the path to api endpoint
         const newURL = new URL(SERVER_URL + apiPath) // build URL object
@@ -48,42 +48,51 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
         }
     }
 
-    const chapter = await chapterLoader({ request, params: { bookId: String(book.id), id: String(book.chapters[0].id) } }) // we load chapter from database fetching _auth.api.books.$bookId.chapters.$id page
+    let chapter: IChapter | null;
+    if (book.chapters.length > 0) {
+        chapter = await chapterLoader({ request, params: { bookId: String(book.id), id: String(book.chapters[0].id) } }) // we load chapter from database fetching _auth.api.books.$bookId.chapters.$id page
+        return { book, initialChapter: chapter }
+    }
 
-    if (!chapter)
-        return redirect("/") // no chapter in database
-
-    return { book: book as IBook, initialChapter: chapter as IChapter }
+    return { book: book as IBook, initialChapter: null }
 }
 
 
 
 const BookPage: React.FC = () => {
     const { book, initialChapter } = useLoaderData<typeof loader>() // get book and first loaded chapter
-    const [currentChapter, setCurrentChapter] = useState<IChapter>(initialChapter) // state for current chapter
+    const [currentChapter, setCurrentChapter] = useState<IChapter | null>(initialChapter) // state for current chapter
     const dispatch = useDispatch() // dispatch from redux
 
     useEffect(() => {
-        dispatch(setChapters([initialChapter])) // on first render we upload chapters to redux
+        if (initialChapter)
+            dispatch(setChapters([initialChapter])) // on first render we upload chapters to redux
     }, [])
+
 
     return (
         <div className="p-6 max-w-3xl mx-auto">
             <h1 className="text-3xl font-bold mb-6">{book.title}</h1>
 
-            {/** Selection Tab for Chapters */}
-            <ChapterSelector book={book} setCurrentChapter={setCurrentChapter} currentChapter={currentChapter} />
+            {
+                currentChapter && <>
 
-            {/** Chapter Content */}
-            <div>
-                <h2 className="text-2xl font-semibold mb-4">{currentChapter.title}</h2>
+                    {/** Selection Tab for Chapters */}
+                    <ChapterSelector book={book} setCurrentChapter={setCurrentChapter} currentChapter={currentChapter} />
 
-                {/** Epigraph Content */}
-                <Epigraph epigraphData={currentChapter.epigraph} />
+                    {/** Chapter Content */}
+                    <div>
+                        <h2 className="text-2xl font-semibold mb-4">{currentChapter.title}</h2>
 
-                {/** Text itself */}
-                <ParagraphContent list={currentChapter.paragraphs} />
-            </div>
+                        {/** Epigraph Content */}
+                        <Epigraph epigraphData={currentChapter.epigraph} />
+
+                        {/** Text itself */}
+                        <ParagraphContent list={currentChapter.paragraphs} />
+                    </div>
+
+                </>
+            }
         </div>
 
     )

@@ -12,7 +12,7 @@ import type { AppDispatch, RootState } from 'store'
 interface ChapterSelectorProps {
     book: IBook,
     currentChapter: IChapter,
-    setCurrentChapter: React.Dispatch<React.SetStateAction<IChapter>>
+    setCurrentChapter: React.Dispatch<React.SetStateAction<IChapter | null>>
 }
 
 const CLIENT_URL = import.meta.env.VITE_CLIENT_URL

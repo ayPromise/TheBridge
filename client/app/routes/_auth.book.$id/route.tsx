@@ -82,7 +82,7 @@ const BookPage: React.FC = () => {
 
     return (
         <div className="p-6 max-w-3xl mx-auto relative">
-            <div className="absolute -right-[150px]">
+            <div className="absolute -right-[150px] top-[130px]">
                 <Button variant="contained" color="error" onClick={handleRemove}>Remove the book</Button>
             </div>
             <h1 className="text-3xl font-bold mb-6">{book.title}</h1>

@@ -13,7 +13,6 @@ export default factories.createCoreController('api::book.book', ({strapi})=>({
             }})
 
 
-            console.log(books)
         return ctx.send({data:books})
     },
 

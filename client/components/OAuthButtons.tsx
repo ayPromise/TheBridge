@@ -18,7 +18,6 @@ const OAuthButtons: React.FC<OAuthButtonsProps> = ({ loadingRequest, setLoadingR
     const handleLogin = (provider: 'google' | 'github') => {
         setLoadingRequest(true)
         const url = SERVER_URL + serverAPIRoutes.OAuthConnectStart(provider)
-        console.log(url)
         window.location.href = url
         setLoadingRequest(false)
     };

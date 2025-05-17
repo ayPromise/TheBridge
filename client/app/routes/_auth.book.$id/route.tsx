@@ -1,5 +1,9 @@
-import { redirect, useFetcher, useLoaderData, type LoaderFunctionArgs } from "react-router"
+import { redirect, useLoaderData, type LoaderFunctionArgs } from "react-router"
 import { useEffect, useState } from "react"
+
+// utils
+import { clientAPIRoutes, serverAPIRoutes } from "consts/endpoints"
+import fetchDataJWT from "utils/fetchDataJWT"
 
 // external loader
 import { loader as chapterLoader } from "~/routes/_auth.api.books.$bookId.chapters.$id/route"
@@ -11,74 +15,93 @@ import { getJwt } from "~/session/auth"
 import type { IChapter } from "types/Chapter"
 import type { IBook } from "types/Book"
 
-// redux
-import { useDispatch } from "react-redux"
-import { setChapters } from "features/chapters/chapterSlice"
-import { store } from "store"
-
 // components
 import ChapterSelector from "./ChapterSelector"
 import Epigraph from "./Epigraph"
 import ParagraphContent from "./ParagraphContent"
-import fetchDataJWT from "utils/fetchDataJWT"
-import { clientAPIRoutes, serverAPIRoutes } from "consts/endpoints"
 import { Button } from "@mui/material"
 
 const SERVER_URL = import.meta.env.VITE_STRAPI_BACKEND_URL
-const CLIENT_URL = import.meta.env.VITE_CLIENT_URL
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     const jwt = await getJwt(request) // get jwt
-    const books = store.getState().books.value; // get books in redux store
-    let book: IBook | undefined = books.find((book) => book.id === Number(params.id)); // get book we search for in redux
 
-    if (!book) {
-        // if book doesnt exist in redux
+    let book: IBook;
+    const apiPath = serverAPIRoutes.bookById(params.id as string) // the path to api endpoint
+    const newURL = new URL(SERVER_URL + apiPath) // build URL object
 
+    try {
+        book = await fetchDataJWT(newURL, jwt) // get book from database
 
-        const apiPath = serverAPIRoutes.bookById(params.id as string) // the path to api endpoint
-        const newURL = new URL(SERVER_URL + apiPath) // build URL object
+        if (!book) // no book in database
+            return redirect("/")
 
-        try {
-            book = await fetchDataJWT(newURL, jwt) // get book from database
-
-            if (!book) // no book in database
-                return redirect("/")
-
-        } catch {
-            return redirect("/") // error means get out
-        }
+    } catch {
+        return redirect("/") // error means get out
     }
 
-    let chapter: IChapter | null;
+    let chapter: IChapter | null = null; // var for storing the chapter
     if (book.chapters.length > 0) {
-        chapter = await chapterLoader({ request, params: { bookId: String(book.id), id: String(book.chapters[0].id) } }) // we load chapter from database fetching _auth.api.books.$bookId.chapters.$id page
-        return { book, initialChapter: chapter }
+        const chapterId = book.readingProgress ? book.readingProgress.chapterId : book.chapters[0].id
+        chapter = await chapterLoader({ request, params: { bookId: String(book.id), id: String(chapterId) } })
     }
 
-    return { book: book as IBook, initialChapter: null }
+    return { book, initialChapter: chapter }
 }
 
 
 
 const BookPage: React.FC = () => {
     const { book, initialChapter } = useLoaderData<typeof loader>() // get book and first loaded chapter
-    const [currentChapter, setCurrentChapter] = useState<IChapter | null>(initialChapter) // state for current chapter
-    const dispatch = useDispatch() // dispatch from redux
-    const fetcher = useFetcher()
+    const [currentChapter, setCurrentChapter] = useState<IChapter | null>(null)
+
+    const currentChapterIndex = book.chapters.findIndex((ch) => {
+        if (currentChapter && ch.id === currentChapter.id)
+            return ch.id
+    })
+
     useEffect(() => {
-        if (initialChapter)
-            dispatch(setChapters([initialChapter])) // on first render we upload chapters to redux
-    }, [])
+        if (currentChapter && currentChapter !== initialChapter) {
+            const payload = {
+                readingProgress: {
+                    chapterId: currentChapter.id,
+                    paragraphIndex: 0
+                }
+            }
 
-    const handleRemove = () => {
-        fetcher.submit(null, {
-            method: "DELETE",
-            action: clientAPIRoutes.deleteBook(String(book.id))
-        })
+            fetch(clientAPIRoutes.updateBook(String(book.id)), {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+        }
 
-        return redirect("/")
+        if (!currentChapter && initialChapter) {
+            setCurrentChapter(initialChapter)
+        }
+    }, [currentChapter])
+
+    const handleNavigateChapter = async (chapterId: number) => {
+        const res = await fetch(clientAPIRoutes.chapterOfBook(book.id, chapterId))
+        const data = await res.json()
+        setCurrentChapter(data)
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
     }
 
+    const handleRemove = () => {
+        fetch(clientAPIRoutes.deleteBook(String(book.id)), {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+        return redirect("/")
+    }
 
     return (
         <div className="p-6 max-w-3xl mx-auto relative">
@@ -102,6 +125,19 @@ const BookPage: React.FC = () => {
 
                         {/** Text itself */}
                         <ParagraphContent list={currentChapter.paragraphs} />
+
+                        {/** Next / Previous chapter selection */}
+                        <div className="flex justify-between">
+                            <Button onClick={() => handleNavigateChapter(book.chapters[currentChapterIndex - 1].id)}
+                                variant="contained" disabled={!(currentChapterIndex > 0)}>{"<- "}
+                                {currentChapterIndex > 0 && book.chapters[currentChapterIndex - 1].title}
+                            </Button>
+
+                            <Button onClick={() => handleNavigateChapter(book.chapters[currentChapterIndex + 1].id)}
+                                variant="contained" disabled={!(currentChapterIndex < book.chapters.length - 1)}>
+                                {currentChapterIndex < book.chapters.length - 1 && book.chapters[currentChapterIndex + 1].title}{" ->"}
+                            </Button>
+                        </div>
                     </div>
 
                 </>

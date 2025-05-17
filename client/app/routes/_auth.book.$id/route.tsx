@@ -20,8 +20,7 @@ import ChapterSelector from "./ChapterSelector"
 import Epigraph from "./Epigraph"
 import ParagraphContent from "./ParagraphContent"
 import { Button } from "@mui/material"
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import ChapterNavigation from "./ChapterNavigation"
 
 const SERVER_URL = import.meta.env.VITE_STRAPI_BACKEND_URL
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
@@ -55,11 +54,6 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 const BookPage: React.FC = () => {
     const { book, initialChapter } = useLoaderData<typeof loader>() // get book and first loaded chapter
     const [currentChapter, setCurrentChapter] = useState<IChapter | null>(null)
-
-    const currentChapterIndex = book.chapters.findIndex((ch) => {
-        if (currentChapter && ch.id === currentChapter.id)
-            return ch.id
-    })
 
     useEffect(() => {
         if (currentChapter && currentChapter !== initialChapter) {
@@ -129,19 +123,7 @@ const BookPage: React.FC = () => {
                         <ParagraphContent list={currentChapter.paragraphs} />
 
                         {/** Next / Previous chapter selection */}
-                        <div className="flex justify-between">
-                            <Button onClick={() => handleNavigateChapter(book.chapters[currentChapterIndex - 1].id)}
-                                variant="contained" disabled={!(currentChapterIndex > 0)}>
-                                <ChevronLeftIcon />
-                                {currentChapterIndex > 0 && book.chapters[currentChapterIndex - 1].title}
-                            </Button>
-
-                            <Button onClick={() => handleNavigateChapter(book.chapters[currentChapterIndex + 1].id)}
-                                variant="contained" disabled={!(currentChapterIndex < book.chapters.length - 1)}>
-                                {currentChapterIndex < book.chapters.length - 1 && book.chapters[currentChapterIndex + 1].title}
-                                <ChevronRightIcon />
-                            </Button>
-                        </div>
+                        <ChapterNavigation currentChapter={currentChapter} allChapters={book.chapters} handleNavigateChapter={handleNavigateChapter} />
                     </div>
 
                 </>

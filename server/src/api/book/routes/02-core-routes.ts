@@ -13,6 +13,9 @@ export default factories.createCoreRouter('api::book.book', {
     },
     delete:{
       policies:['global::is-authenticated']
+    },
+    update:{
+      policies:['global::is-authenticated']
     }
   }
 });

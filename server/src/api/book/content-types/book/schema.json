@@ -46,6 +46,10 @@
     "slug": {
       "type": "uid",
       "targetField": "title"
+    },
+    "readingProgress": {
+      "type": "json",
+      "required": false
     }
   }
 }

@@ -60,5 +60,29 @@ export default factories.createCoreController('api::book.book', ({strapi})=>({
 
 
         return ctx.send({data:"Book successfully removed"})
+    },
+
+    async update(ctx){
+        const id = ctx.params.id
+        const user = ctx.state.user
+        const body = ctx.request.body
+
+        const book = await strapi.db.query("api::book.book").findOne({where:{id:id}, populate:{
+            owner:true
+        }})
+        if (!book) {
+            return ctx.notFound('Book does not exist');
+        }
+
+        if (book.owner.id !== user.id) {
+            return ctx.unauthorized('You have no access to modify this book');
+        }
+
+        const updatedBook = await strapi.db.query("api::book.book").update({where:{id:id}, data:body})
+        
+        if(!updatedBook)
+            return ctx.badRequest("Bad request modifying the book")
+        
+        ctx.send(updatedBook)
     }
 }));

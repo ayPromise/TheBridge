@@ -2,7 +2,7 @@ import type { IEpigraph } from "./Chapter";
 import type { FB2_INote } from "./FB2File";
 
 export interface BookRelation{
-    connect: {documentId:number, status:string}[]
+    connect: {documentId:string, status:string}[]
 }
 
 // BOOK
@@ -14,6 +14,7 @@ export interface IBookPayload {
         lastName:string
     };
 }
+
 
 // NOTES
 export interface INotesPayload{

@@ -43,4 +43,10 @@ export interface IBook {
   owner: IBookOwner;
 
   chapters: IShortedChapter[]
+  readingProgress:IReadingProgress
+}
+
+export type IReadingProgress = {
+  chapterId:number,
+  paragraphIndex:number
 }

@@ -1,7 +1,7 @@
 const fetchDataJWT = async (
   url: URL,
   jwt: string | null,
-  method: 'GET' | 'POST' | 'DELETE' = 'GET',
+  method: 'GET' | 'POST' | 'PATCH' | 'DELETE' = 'GET',
   body?: any
 ) => {
   try {
@@ -11,7 +11,7 @@ const fetchDataJWT = async (
         Authorization: jwt ? `Bearer ${jwt}` : '',
         'Content-Type': 'application/json',
       },
-      body: method === 'POST' && body ? JSON.stringify(body) : undefined,
+      body: body ? JSON.stringify(body) : undefined,
     });
 
     if (!response.ok) {

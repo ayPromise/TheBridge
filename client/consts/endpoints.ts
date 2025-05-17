@@ -4,8 +4,8 @@ export const serverAPIRoutes = {
     notes: '/api/notes',
     singIn: '/api/auth/local',
     signUp: '/api/auth/local/register',
-    chapterOfBook: (bookId:number, chapterId:number)=> `/api/books/${bookId}/chapters/${chapterId}`,
-    bookById: (bookId: number) => `/api/books/${bookId}`,
+    chapterOfBook: (bookId:string, chapterId:string)=> `/api/books/${bookId}/chapters/${chapterId}`,
+    bookById: (bookId: string) => `/api/books/${bookId}`,
     OAuthConnectStart: (provider:string) => `/api/connect/${provider}`,
     OAuthConnectFinal: (provider:string) => `/api/auth/${provider}/callback`,
   } as const;

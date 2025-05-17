@@ -4,9 +4,6 @@ import { XMLParser } from 'fast-xml-parser'
 // consts
 import { clientAPIRoutes } from 'consts/endpoints'
 
-// hooks
-import useFetcherSubmit from 'hooks/useFetcherSubmit'
-
 // components
 import AddBoxIcon from '@mui/icons-material/AddBox'
 import { Button } from '@mui/material'
@@ -15,17 +12,18 @@ import VisuallyHiddenInput from './VisuallyHiddenInput'
 // types
 import type { FB2_IBook, FB2_IChapter, FB2_INote } from 'types/FB2File'
 import type { IBookPayload, IChaptersPayload, INotesPayload, Payload } from 'types/Payloads'
+import type { IBook } from 'types/Book'
 
 const ImportButton = () => {
     const [bookData, setBookData] = useState<FB2_IBook | null>(null)
-    const { fetcher, submit } = useFetcherSubmit()
+    const [createdBook, setCreatedBook] = useState<IBook | null>(null)
 
     useEffect(() => {
-        if (fetcher.data && fetcher.data.id && fetcher.data.entityType === 'book') {
-            handleNotesCreation(fetcher.data.documentId)
-            handleChaptersCreation(fetcher.data.documentId)
+        if (createdBook) {
+            handleNotesCreation(createdBook.documentId)
+            handleChaptersCreation(createdBook.documentId)
         }
-    }, [fetcher.data]);
+    }, [createdBook]);
 
 
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -49,7 +47,7 @@ const ImportButton = () => {
         reader.readAsText(file)
     }
 
-    const handleChaptersCreation = (documentId: number): void => {
+    const handleChaptersCreation = (documentId: string): void => {
         if (bookData) {
             const chapters = bookData?.body[0].section as FB2_IChapter[]
 
@@ -74,12 +72,18 @@ const ImportButton = () => {
                     entityType: "chapter"
                 };
 
-                submit(chapterPayload, clientAPIRoutes.createChapters)
+                fetch(clientAPIRoutes.createChapters, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(chapterPayload)
+                });
             });
         }
     }
 
-    const handleNotesCreation = (documentId: number): void => {
+    const handleNotesCreation = (documentId: string): void => {
         if (bookData) {
             const notes = bookData?.body[1].section as FB2_INote[]
             if (!notes) return
@@ -94,7 +98,13 @@ const ImportButton = () => {
                 entityType: 'notes',
             }
 
-            submit(notesPayload, clientAPIRoutes.createNotes)
+            fetch(clientAPIRoutes.createNotes, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(notesPayload)
+            });
 
         }
     }
@@ -116,7 +126,13 @@ const ImportButton = () => {
                 entityType: 'book'
             }
 
-            submit(bookPayload, clientAPIRoutes.createBook)
+            fetch(clientAPIRoutes.createBook, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(bookPayload)
+            }).then(res => res.json()).then((data) => setCreatedBook(data))
         }
     }
 

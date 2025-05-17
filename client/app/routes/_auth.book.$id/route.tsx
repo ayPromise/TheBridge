@@ -68,7 +68,7 @@ const BookPage: React.FC = () => {
                 }
             }
 
-            fetch(clientAPIRoutes.updateBook(String(book.id)), {
+            fetch(clientAPIRoutes.updateBook(book.id), {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json"
@@ -94,7 +94,7 @@ const BookPage: React.FC = () => {
     }
 
     const handleRemove = () => {
-        fetch(clientAPIRoutes.deleteBook(String(book.id)), {
+        fetch(clientAPIRoutes.deleteBook(book.id), {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json"

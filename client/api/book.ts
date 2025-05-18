@@ -26,8 +26,6 @@ const removeBook = async ({bookId}:RemoveBookMutation) : Promise<void>=>{
             "Content-Type": "application/json"
         }
     });
-
-    location.reload()
 }
 
 type CreateBookMutation = {bookData:IBookPayload}

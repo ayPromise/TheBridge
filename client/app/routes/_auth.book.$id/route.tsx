@@ -44,10 +44,11 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
     let chapter: IChapter | null = null; // var for storing the chapter
     if (book.chapters.length > 0) {
-        const chapterId = book.readingProgress ? book.readingProgress.chapterId : book.chapters[0].id
-        chapter = await chapterLoader({ request, params: { bookId: String(book.id), id: String(chapterId) } })
+        let chapterId = book.readingProgress ? book.readingProgress.chapterId : book.chapters[0].id
+        chapter = await chapterLoader({
+            request, params: { bookId: String(book.id), id: String(chapterId) }
+        })
     }
-
     return { book, initialChapter: chapter }
 }
 
@@ -72,21 +73,28 @@ const BookPage: React.FC = () => {
     useEffect(() => {
         if (currentChapter
             && currentChapter !== initialChapter
-            && currentChapter.id !== book.readingProgress?.chapterId) {
-            const payload = {
-                readingProgress: {
-                    chapterId: currentChapter.id,
-                    paragraphIndex: 0
-                }
-            }
+        ) {
 
-            updateBookMutation.mutate({ bookId: book.id, payload })
+            if (currentChapter?.book.id !== book.id) {
+                setCurrentChapter(initialChapter)
+            } else {
+
+                const payload = {
+                    readingProgress: {
+                        chapterId: currentChapter.id,
+                        paragraphIndex: 0
+                    }
+                }
+                updateBookMutation.mutate({ bookId: book.id, bookPayload: payload })
+            }
         }
+
 
         if (!currentChapter && initialChapter) {
             setCurrentChapter(initialChapter)
         }
-    }, [currentChapter])
+
+    }, [currentChapter, initialChapter])
 
     const handleNavigateChapter = async (chapterId: number) => {
         const chapter = await fetchChapter({ bookId: book.id, chapterId })

@@ -14,7 +14,7 @@ interface EpigraphProps {
 const Epigraph: React.FC<EpigraphProps> = ({ epigraphData }) => {
     return epigraphData && <div className='flex flex-col items-end'>
         <h3>{epigraphData.author}</h3>
-        <ParagraphContent list={epigraphData.paragraphs} />
+        <ParagraphContent list={epigraphData.paragraphs} paragraphClassNames='italic text-right' />
     </div>
 }
 

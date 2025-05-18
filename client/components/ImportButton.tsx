@@ -147,6 +147,8 @@ const ImportButton = () => {
             variant="contained"
             startIcon={<AddBoxIcon />}
             tabIndex={-1}
+            fullWidth
+            sx={{ marginBottom: 1 }}
         >
             Book
             <VisuallyHiddenInput

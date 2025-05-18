@@ -1,19 +1,32 @@
 @import "tailwindcss";
 @import "../../theme.css";
 .navbar{
-    @apply bg-main-extraLight pt-14 pb-6 px-10 h-screen text-main-extraDark font-main flex flex-col justify-between sticky top-0
+    @apply bg-main-extraLight h-screen text-main-extraDark font-main flex flex-col justify-between sticky top-0 w-[300px]
+    transition-[300ms] overflow-hidden
+}
+
+.navbarHidden{
+    @apply w-[40px]
+}
+
+.hideNavbarButton{
+    @apply absolute right-[0] top-[0px] w-[40px] h-[40px] rounded-[5px] flex justify-center items-center cursor-pointer hover:bg-amber-50
+}
+
+.hideNavbarIconLeft{
+    @apply rotate-180
+}
+
+.hideNavbarIconRight{
+    @apply rotate-360
 }
 
 .navigationContainer{
-    @apply flex flex-col gap-[100px]
-}
-
-.navigationList{
-    @apply flex flex-col gap-[30px]
+    @apply pl-[40px] w-[200px]
 }
 
 .navigationItem{
-    @apply uppercase text-3xl;
+    @apply uppercase text-3xl mb-[20px];
 }
 
 .navigationButton{
@@ -25,5 +38,5 @@
 }
 
 .copyright{
-    @apply text-main-light text-sm
+    @apply text-main-light text-sm py-[20px]
 }

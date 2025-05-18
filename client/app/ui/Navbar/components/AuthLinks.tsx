@@ -11,7 +11,7 @@ interface AuthLinkProps {
 }
 
 const AuthLinks: React.FC<AuthLinkProps> = ({ currentPath }) => {
-    return <ul className={classes.navigationList}>
+    return <ul>
         {links.map((link, index) => (
 
             <li key={index} className={classes.navigationItem}>

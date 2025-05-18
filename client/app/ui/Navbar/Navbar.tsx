@@ -1,11 +1,13 @@
 import { Link, useLocation } from "react-router";
-import classes from "./Navbar.module.css";
+import styles from "./Navbar.module.css";
+import { useState } from "react";
 
 // components
 import AuthLinks from "./components/AuthLinks";
 import BookSelection from "./components/BookSelection";
 import SignOutButton from "./components/SignOutButton";
 import Copyright from "./components/Copyright";
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 
 // types
 import type IUserSession from "types/User";
@@ -17,20 +19,26 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = ({ user }) => {
     const { pathname } = useLocation();
+    const [isExpandedNavbar, setIsExpandedNavbar] = useState<boolean>(true)
 
     return (
-        <nav className={classes.navbar}>
-            <h1 className="uppercase text-4xl underline">
+        <nav className={`${styles.navbar} ${!isExpandedNavbar ? styles.navbarHidden : ""}`}>
+
+            <div className={styles.hideNavbarButton} onClick={() => setIsExpandedNavbar(!isExpandedNavbar)}>
+                <ChevronLeftIcon className={`${styles.hideNavbarIcon} ${isExpandedNavbar ? styles.hideNavbarIconRight : styles.hideNavbarIconLeft}`} />
+            </div>
+
+            <h1 className="uppercase text-4xl underline px-[40px] pt-[60px]">
                 <Link to="/">BRIDGE</Link>
             </h1>
 
-            <div className={classes.navigationContainer}>
+            <div className={styles.navigationContainer}>
                 {!user && <AuthLinks currentPath={pathname} />}
 
                 <BookSelection currentPath={pathname} />
             </div>
 
-            <div className="flex flex-col gap-[50px]">
+            <div className="px-[40px] w-[300px]">
                 {user && <ImportButton />}
                 {user && <SignOutButton />}
                 <Copyright />

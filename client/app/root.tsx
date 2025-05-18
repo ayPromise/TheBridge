@@ -92,14 +92,10 @@ export default function App() {
   dispatch(setBooks(booksFromDatabase))
 
 
-  return <Grid container spacing={2} className="bg-secondary-extraLight font-typo text-white">
+  return <Grid container className="bg-secondary-extraLight font-typo text-white">
     <NameLabel user={user} />
-    <Grid size={2}>
-      <Navbar user={user} />
-    </Grid>
-    <Grid size={10}>
-      <Outlet />
-    </Grid>
+    <Navbar user={user} />
+    <Outlet />
   </Grid>;
 }
 

@@ -22,7 +22,7 @@ export interface BookEpigraph extends Struct.ComponentSchema {
     icon: 'pencil';
   };
   attributes: {
-    author: Schema.Attribute.String & Schema.Attribute.Required;
+    author: Schema.Attribute.String;
     paragraphs: Schema.Attribute.JSON;
   };
 }

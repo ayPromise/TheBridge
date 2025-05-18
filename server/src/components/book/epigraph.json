@@ -9,7 +9,7 @@
   "attributes": {
     "author": {
       "type": "string",
-      "required": true
+      "required": false
     },
     "paragraphs": {
       "type": "json"

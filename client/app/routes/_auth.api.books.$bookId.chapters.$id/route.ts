@@ -14,10 +14,13 @@ export const loader = async ({ request, params }: Omit<LoaderFunctionArgs, 'cont
   const jwt = await getJwt(request); // get jwt
 
   try{
-    const apiPath = serverAPIRoutes.chapterOfBook(params.bookId as string, params.id as string) // the path to api endpoint
+    const bookId = params.bookId as string
+    const chapterId = params.id as string
+    const apiPath = serverAPIRoutes.chapterOfBook(bookId,chapterId) // the path to api endpoint
     const chapter = await fetchDataJWT(new URL(SERVER_URL+apiPath), jwt) // get chapter of book by id from database
-    
+
     if(!chapter) redirect("/")
+
 
     return chapter
   }catch(error){

@@ -79,16 +79,17 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     const jwt = await getJwt(request)
     const books = await fetchDataJWT(newURL, jwt)
 
-    return { books: books as IBook[] | [], user: user as IUserSession | null }
+    return { booksFromDatabase: books as IBook[] | [], user: user as IUserSession | null }
   } catch {
-    return { books: [], user: user as IUserSession | null }
+    return { booksFromDatabase: [], user: user as IUserSession | null }
   }
 }
 
 export default function App() {
-  const { user, books } = useLoaderData<typeof loader>()
+  const { user, booksFromDatabase } = useLoaderData<typeof loader>()
   const dispatch = useDispatch<AppDispatch>()
-  dispatch(setBooks(books))
+
+  dispatch(setBooks(booksFromDatabase))
 
 
   return <Grid container spacing={2} className="bg-secondary-extraLight font-typo text-white">

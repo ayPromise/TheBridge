@@ -1,5 +1,5 @@
 import { serverAPIRoutes } from "consts/endpoints"
-import { redirect, type ActionFunctionArgs } from "react-router"
+import { type ActionFunctionArgs } from "react-router"
 import fetchDataJWT from "utils/fetchDataJWT"
 import { getJwt} from "~/session/auth"
 

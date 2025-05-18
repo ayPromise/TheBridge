@@ -18,5 +18,5 @@ export const action = async ({request, params} : ActionFunctionArgs) =>{
 
 
     const url = new URL(`${SERVER_URL}${serverAPIRoutes.bookById(bookId)}`)
-    await fetchDataJWT(url, jwt, "PATCH", body)
+    return await fetchDataJWT(url, jwt, "PATCH", body)
 }

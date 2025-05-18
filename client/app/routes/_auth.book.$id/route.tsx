@@ -1,8 +1,8 @@
-import { redirect, useLoaderData, type LoaderFunctionArgs } from "react-router"
+import { redirect, useLoaderData, useNavigate, type LoaderFunctionArgs } from "react-router"
 import { useEffect, useState } from "react"
 
 // utils
-import { clientAPIRoutes, serverAPIRoutes } from "consts/endpoints"
+import { serverAPIRoutes } from "consts/endpoints"
 import fetchDataJWT from "utils/fetchDataJWT"
 
 // external loader
@@ -21,6 +21,8 @@ import Epigraph from "./Epigraph"
 import ParagraphContent from "./ParagraphContent"
 import { Button } from "@mui/material"
 import ChapterNavigation from "./ChapterNavigation"
+import { useMutation } from "@tanstack/react-query"
+import { fetchChapter, removeBook, updateBook } from "api/book"
 
 const SERVER_URL = import.meta.env.VITE_STRAPI_BACKEND_URL
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
@@ -54,9 +56,23 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 const BookPage: React.FC = () => {
     const { book, initialChapter } = useLoaderData<typeof loader>() // get book and first loaded chapter
     const [currentChapter, setCurrentChapter] = useState<IChapter | null>(null)
+    const navigate = useNavigate()
+
+    const updateBookMutation = useMutation({
+        mutationKey: ["updateBook"],
+        mutationFn: updateBook
+    });
+
+    const removeBookMutation = useMutation({
+        mutationKey: ["removeBook"],
+        mutationFn: removeBook,
+        onSuccess: () => navigate("/")
+    })
 
     useEffect(() => {
-        if (currentChapter && currentChapter !== initialChapter) {
+        if (currentChapter
+            && currentChapter !== initialChapter
+            && currentChapter.id !== book.readingProgress?.chapterId) {
             const payload = {
                 readingProgress: {
                     chapterId: currentChapter.id,
@@ -64,13 +80,7 @@ const BookPage: React.FC = () => {
                 }
             }
 
-            fetch(clientAPIRoutes.updateBook(book.id), {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(payload)
-            });
+            updateBookMutation.mutate({ bookId: book.id, payload })
         }
 
         if (!currentChapter && initialChapter) {
@@ -79,30 +89,23 @@ const BookPage: React.FC = () => {
     }, [currentChapter])
 
     const handleNavigateChapter = async (chapterId: number) => {
-        const res = await fetch(clientAPIRoutes.chapterOfBook(book.id, chapterId))
-        const data = await res.json()
-        setCurrentChapter(data)
+        const chapter = await fetchChapter({ bookId: book.id, chapterId })
 
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
-    }
-
-    const handleRemove = () => {
-        fetch(clientAPIRoutes.deleteBook(book.id), {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        });
-        return redirect("/")
+        if (chapter) {
+            setCurrentChapter(chapter)
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        }
     }
 
     return (
         <div className="p-6 max-w-3xl mx-auto relative">
             <div className="absolute -right-[150px] top-[130px]">
-                <Button variant="contained" color="error" onClick={handleRemove}>Remove the book</Button>
+                <Button variant="contained" color="error" onClick={() => removeBookMutation.mutate({ bookId: book.id })}>
+                    Remove the book
+                </Button>
             </div>
             <h1 className="text-3xl font-bold mb-6">{book.title}</h1>
 

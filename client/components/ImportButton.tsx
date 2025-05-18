@@ -1,9 +1,6 @@
 import { useEffect, useState, type ChangeEvent } from 'react'
 import { XMLParser } from 'fast-xml-parser'
 
-// consts
-import { clientAPIRoutes } from 'consts/endpoints'
-
 // components
 import AddBoxIcon from '@mui/icons-material/AddBox'
 import { Button } from '@mui/material'
@@ -12,19 +9,41 @@ import VisuallyHiddenInput from './VisuallyHiddenInput'
 // types
 import type { FB2_IBook, FB2_IChapter, FB2_INote } from 'types/FB2File'
 import type { IBookPayload, IChaptersPayload, INotesPayload, Payload } from 'types/Payloads'
+import { createChapter } from 'api/chapters'
+import { createNotes } from 'api/notes'
+import { createBook } from 'api/book'
+import { useMutation } from '@tanstack/react-query'
+import { useNavigate } from 'react-router'
 import type { IBook } from 'types/Book'
 
 const ImportButton = () => {
     const [bookData, setBookData] = useState<FB2_IBook | null>(null)
-    const [createdBook, setCreatedBook] = useState<IBook | null>(null)
+    const navigate = useNavigate()
+
+    const createBookMutation = useMutation({
+        mutationKey: ["createBook"],
+        mutationFn: createBook,
+        onSuccess: (book: IBook) => {
+            handleNotesCreation(book.documentId)
+            handleChaptersCreation(book.documentId)
+        }
+    })
+
+    const createChapterMutation = useMutation({
+        mutationKey: ["createChapter"],
+        mutationFn: createChapter
+    })
+
+    const createNotesMutation = useMutation({
+        mutationKey: ["createNotes"],
+        mutationFn: createNotes
+    })
 
     useEffect(() => {
-        if (createdBook) {
-            handleNotesCreation(createdBook.documentId)
-            handleChaptersCreation(createdBook.documentId)
+        if (createChapterMutation.isSuccess) {
+            navigate("/")
         }
-    }, [createdBook]);
-
+    }, [createChapterMutation.isSuccess])
 
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0]
@@ -53,7 +72,7 @@ const ImportButton = () => {
 
             chapters.forEach((ch) => {
 
-                const data: IChaptersPayload = {
+                const chapterData: IChaptersPayload = {
                     title: ch.title.p,
                     paragraphs: ch.p,
                     book: {
@@ -62,23 +81,12 @@ const ImportButton = () => {
                 };
 
                 if (ch.epigraph?.['text-author'] || ch.epigraph?.p)
-                    data.epigraph = {
+                    chapterData.epigraph = {
                         author: ch.epigraph?.['text-author'],
                         paragraphs: ch.epigraph?.p,
                     }
 
-                let chapterPayload: Payload<IChaptersPayload> = {
-                    data: data,
-                    entityType: "chapter"
-                };
-
-                fetch(clientAPIRoutes.createChapters, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(chapterPayload)
-                });
+                createChapterMutation.mutate({ chapterData })
             });
         }
     }
@@ -88,51 +96,33 @@ const ImportButton = () => {
             const notes = bookData?.body[1].section as FB2_INote[]
             if (!notes) return
 
-            const notesPayload: Payload<INotesPayload> = {
-                data: {
-                    book: {
-                        connect: [{ documentId, status: 'draft' }, { documentId, status: 'published' }]
-                    },
-                    notes: notes,
+            const notesData: INotesPayload = {
+                book: {
+                    connect: [{ documentId, status: 'draft' }, { documentId, status: 'published' }]
                 },
-                entityType: 'notes',
+                notes: notes,
             }
 
-            fetch(clientAPIRoutes.createNotes, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(notesPayload)
-            });
+            createNotesMutation.mutate({ notesData })
 
         }
     }
 
-    const handleBookCreation = (): void => {
+    const handleBookCreation = async (): Promise<void> => {
         if (bookData) {
 
             const titleInfo = bookData.description["title-info"]
 
-            const bookPayload: Payload<IBookPayload> = {
-                data: {
-                    title: titleInfo["book-title"],
-                    author: {
-                        firstName: titleInfo.author['first-name'],
-                        middleName: titleInfo.author['middle-name'],
-                        lastName: titleInfo.author['last-name']
-                    },
+            const bookPayload: IBookPayload = {
+                title: titleInfo["book-title"],
+                author: {
+                    firstName: titleInfo.author['first-name'],
+                    middleName: titleInfo.author['middle-name'],
+                    lastName: titleInfo.author['last-name']
                 },
-                entityType: 'book'
             }
 
-            fetch(clientAPIRoutes.createBook, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(bookPayload)
-            }).then(res => res.json()).then((data) => setCreatedBook(data))
+            createBookMutation.mutate({ bookData: bookPayload })
         }
     }
 

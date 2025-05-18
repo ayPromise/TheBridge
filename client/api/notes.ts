@@ -17,8 +17,10 @@ const createNotes = async (
       },
       body: JSON.stringify(notesPayload),
     });
+
+
+    if(!res.ok) throw new Error("Failed while creating notes")
   
-    if (!res.ok) throw new Error('Failed to create notes');
   };
 
 export {createNotes}

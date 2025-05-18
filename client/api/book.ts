@@ -11,20 +11,27 @@ const fetchChapter = async ({bookId, chapterId}:FetchChapter) : Promise<IChapter
     return await res.json()
 }
 
-type UpdateBookMutation = {bookId:number, payload:any}
-const updateBook = async ({bookId, payload}:UpdateBookMutation) : Promise<IBook>=>{
-    const res = await fetch(clientAPIRoutes.updateBook(bookId), { method: "PATCH", body: JSON.stringify(payload) });
-    if (!res.ok) throw new Error('Failed to update the book');
+type UpdateBookMutation = {bookId:number, bookPayload:any}
+const updateBook = async ({bookId, bookPayload}:UpdateBookMutation) : Promise<IBook>=>{
+    const res = await fetch(clientAPIRoutes.updateBook(bookId),
+      {method:"POST",
+        headers:{
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(bookPayload)});
+
+        if(!res.ok) throw new Error('Failed to update book');
+
     return await res.json();
 }
 
 type RemoveBookMutation = {bookId:number}
 const removeBook = async ({bookId}:RemoveBookMutation) : Promise<void>=>{
-    await fetch(clientAPIRoutes.deleteBook(bookId), {
-        method: "DELETE",
-        headers: {
-            "Content-Type": "application/json"
-        }
+    await fetch(clientAPIRoutes.deleteBook(bookId),{
+      method:"DELETE",
+      headers:{
+        'Content-Type': 'application/json',
+      },
     });
 }
 
@@ -36,10 +43,10 @@ export const createBook = async ({bookData}:CreateBookMutation): Promise<IBook> 
     };
   
     const res = await fetch(clientAPIRoutes.createBook, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      method:"POST",
+        headers:{
+          'Content-Type': 'application/json',
+        },
       body: JSON.stringify(bookPayload),
     });
   

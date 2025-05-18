@@ -19,7 +19,7 @@
     },
     "notes": {
       "type": "json",
-      "required": true
+      "required": false
     }
   }
 }

@@ -1,9 +1,12 @@
+import type { IBook } from "./Book";
+
 export interface IChapter {
   id: number;
   documentId: string;
   title: string;
   paragraphs: IChapterParagraph[];
   epigraph?: IEpigraph;
+  book:IBook;
 }
 
 type IEmphasis = {emphasis:string}

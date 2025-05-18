@@ -43,7 +43,7 @@ export interface IBook {
   owner: IBookOwner;
 
   chapters: IShortedChapter[]
-  readingProgress:IReadingProgress
+  readingProgress?:IReadingProgress
 }
 
 export type IReadingProgress = {

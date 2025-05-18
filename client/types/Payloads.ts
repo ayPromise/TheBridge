@@ -19,7 +19,7 @@ export interface IBookPayload {
 // NOTES
 export interface INotesPayload{
     book:BookRelation,
-    notes:FB2_INote[]
+    notes:FB2_INote[] | {}
 }
 
 // CHAPTERS

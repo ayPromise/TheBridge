@@ -39,12 +39,6 @@ const ImportButton = () => {
         mutationFn: createNotes
     })
 
-    useEffect(() => {
-        if (createChapterMutation.isSuccess) {
-            navigate("/")
-        }
-    }, [createChapterMutation.isSuccess])
-
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0]
         if (!file) return
@@ -68,13 +62,21 @@ const ImportButton = () => {
 
     const handleChaptersCreation = (documentId: string): void => {
         if (bookData) {
-            const chapters = bookData?.body[0].section as FB2_IChapter[]
+            let chapters: any[]
+
+            if (!Array.isArray(bookData?.body)) {
+                const mainSection = bookData.body.section
+                const childSections = mainSection.filter(el => el.section)
+                chapters = childSections.map(el => ([...el.section])).flat(Infinity)
+            } else {
+                chapters = bookData.body[0].section
+            }
 
             chapters.forEach((ch) => {
 
                 const chapterData: IChaptersPayload = {
-                    title: ch.title.p,
-                    paragraphs: ch.p,
+                    title: ch.title?.p ?? "ПЕРЕДМОВА",
+                    paragraphs: ch.p ?? "",
                     book: {
                         connect: [{ documentId, status: 'draft' }, { documentId, status: 'published' }]
                     }
@@ -86,6 +88,7 @@ const ImportButton = () => {
                         paragraphs: ch.epigraph?.p,
                     }
 
+
                 createChapterMutation.mutate({ chapterData })
             });
         }
@@ -93,17 +96,18 @@ const ImportButton = () => {
 
     const handleNotesCreation = (documentId: string): void => {
         if (bookData) {
-            const notes = bookData?.body[1].section as FB2_INote[]
-            if (!notes) return
+            let notes: FB2_INote[] | {} = {};
+            if (Array.isArray(bookData?.body)) notes = bookData.body[1].section
 
             const notesData: INotesPayload = {
                 book: {
                     connect: [{ documentId, status: 'draft' }, { documentId, status: 'published' }]
                 },
-                notes: notes,
+                notes,
             }
 
             createNotesMutation.mutate({ notesData })
+
 
         }
     }
@@ -127,10 +131,14 @@ const ImportButton = () => {
     }
 
     useEffect(() => {
-        if (bookData) {
+        if (bookData && !createChapterMutation.isSuccess) {
             handleBookCreation(); // Create book first
         }
-    }, [bookData]);
+
+        if (createChapterMutation.isSuccess)
+            navigate("/")
+
+    }, [bookData, createChapterMutation.isSuccess]);
 
     return (
         <Button

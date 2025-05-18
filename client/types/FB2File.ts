@@ -28,10 +28,15 @@ export interface FB2_IChapter {
         p:string[];
     }
 }
+
+export interface FB2_ISection {
+    title: {p:string};
+    section: FB2_IChapter[];
+}
   
 export interface FB2_IBody {
     title:string;
-    section: FB2_IChapter[] | FB2_INote[];
+    section: FB2_IChapter[] | FB2_INote[] | FB2_ISection[];
 }
 
 export interface FB2_IBook{

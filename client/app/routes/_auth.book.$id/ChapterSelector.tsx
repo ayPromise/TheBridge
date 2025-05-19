@@ -1,4 +1,7 @@
-import React from 'react'
+import { Button } from '@mui/material'
+import { fetchChapter } from 'api/book'
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router'
 
 // types
 import type { IBook } from 'types/Book'
@@ -10,31 +13,43 @@ interface ChapterSelectorProps {
     setCurrentChapter: React.Dispatch<React.SetStateAction<IChapter | null>>
 }
 
-const CLIENT_URL = import.meta.env.VITE_CLIENT_URL
-
 const ChapterSelector: React.FC<ChapterSelectorProps> = ({ book, setCurrentChapter, currentChapter }) => {
+    const [isExpandedElement, setIsExpandedElement] = useState<boolean>(false)
+    const navigate = useNavigate()
     const handleClick = async (id: number) => {
-
-        const urlAPI = new URL(CLIENT_URL + `/api/books/${book.id}/chapters/${id}`)
-        const response = await fetch(urlAPI)
-        const newChapter = await response.json()
-
-        if (newChapter)
-            setCurrentChapter(newChapter)
+        const chapter = await fetchChapter({ chapterId: id, bookId: book.id })
+        if (chapter) {
+            setCurrentChapter(chapter)
+            const sameChapterFromBookState = book.chapters.find(el => el.id === currentChapter.id)
+            if (currentChapter.completed && !sameChapterFromBookState?.completed)
+                navigate("")
+        }
     }
 
+    const completedChapterStyles = "bg-slate-500 font-normal"
+
     return (
-        <div className="flex gap-1 mb-8 flex-wrap">
-            {book.chapters && book.chapters.map((ch, index) => (
-                <button
-                    key={index}
-                    onClick={() => handleClick(ch.id)}
-                    className={`border-2 font-bold hover:underline p-1 ${currentChapter.id === ch.id ? "bg-white text-black" : "text-white "}`}
-                >
-                    {ch.title}
-                </button>
-            ))}
-        </div>
+        <>
+            <Button
+                variant="contained"
+                sx={{ marginBottom: 1 }}
+                onClick={() => setIsExpandedElement(!isExpandedElement)}>
+                {
+                    isExpandedElement ? "Hide chapters" : "Show chapters"
+                }
+            </Button>
+            {isExpandedElement && <div className="flex gap-1 mb-8 flex-wrap">
+                {book.chapters && book.chapters.map((ch, index) => (
+                    <button
+                        key={index}
+                        onClick={() => handleClick(ch.id)}
+                        className={`border-2 font-bold hover:underline cursor-pointer p-1 ${currentChapter.id === ch.id ? "bg-white text-black" : "text-white "} ${ch.completed ? completedChapterStyles : ""}`}
+                    >
+                        {ch.title}
+                    </button>
+                ))}
+            </div>}
+        </>
     )
 }
 

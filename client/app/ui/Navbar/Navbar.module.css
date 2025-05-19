@@ -22,7 +22,7 @@
 }
 
 .navigationContainer{
-    @apply pl-[40px] w-[200px]
+    @apply px-[40px] w-[300px]
 }
 
 .navigationItem{

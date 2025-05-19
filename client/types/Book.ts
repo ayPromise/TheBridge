@@ -25,7 +25,8 @@ export interface IBookOwner {
 
 export interface IShortedChapter{
   title:string,
-  id:number
+  id:number,
+  completed:boolean
 }
 
 export interface IBook {

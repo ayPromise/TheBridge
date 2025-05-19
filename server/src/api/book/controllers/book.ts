@@ -21,7 +21,7 @@ export default factories.createCoreController('api::book.book', ({strapi})=>({
         const bookId = ctx.params.id
         const book = await strapi.db.query('api::book.book').findOne({where:{id:bookId}, populate:{
             owner:true,
-            chapters:{select:['id','title']}
+            chapters:{select:['id','title', 'completed']}
         }})
 
         if (!book) {

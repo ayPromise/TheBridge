@@ -29,6 +29,11 @@
     },
     "paragraphs": {
       "type": "json"
+    },
+    "completed": {
+      "type": "boolean",
+      "default": false,
+      "required": true
     }
   }
 }

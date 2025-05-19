@@ -18,6 +18,15 @@ export default {routes:[
       }
     },
     {
+      method:"PATCH",
+      path:'/chapters/:id',
+      handler:"chapter.update",
+      config:{
+        policies:["global::is-authenticated"],
+        middleware:[]
+      }
+    },
+    {
       method:"DELETE",
       path:'/chapters',
       handler:"chapter.deleteAll",

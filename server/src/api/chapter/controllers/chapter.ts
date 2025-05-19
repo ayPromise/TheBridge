@@ -55,6 +55,18 @@ export default factories.createCoreController('api::chapter.chapter', ({strapi})
         return ctx.send({data:chapter})
     },
 
+    // user
+    async update(ctx){
+        const body = ctx.request.body
+        const chapterId = ctx.params.id
+        const updatedChapter = await strapi.db.query("api::chapter.chapter").update({where:{
+            id:chapterId
+        }, data:body, populate:{
+            book:true
+        }})
+        return ctx.send({data:updatedChapter})
+    },
+
     // admin
     async deleteAll(ctx) {
         try {

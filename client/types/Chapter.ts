@@ -7,6 +7,7 @@ export interface IChapter {
   paragraphs: IChapterParagraph[];
   epigraph?: IEpigraph;
   book:IBook;
+  completed:boolean
 }
 
 type IEmphasis = {emphasis:string}

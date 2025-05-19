@@ -1,5 +1,6 @@
 import { clientAPIRoutes } from "consts/endpoints";
-import type {IChaptersPayload, Payload } from "types/Payloads";
+import type { IChapter } from "types/Chapter";
+import type {IChaptersPayload, IChapterUpdatePayload, Payload } from "types/Payloads";
 
 type CreateChaptersMutation = {chapterData:IChaptersPayload}
 const createChapter = async (
@@ -22,4 +23,22 @@ const createChapter = async (
   if (!res.ok) throw new Error('Failed to create chapter');
 };
 
-export {createChapter}
+type UpdateChaptersMutation = {chapterId:number, chapterData:IChapterUpdatePayload}
+const updateChapter = async (
+  {chapterData,chapterId}:UpdateChaptersMutation
+): Promise<IChapter> => {
+
+  const res = await fetch(clientAPIRoutes.updateChapter(chapterId), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(chapterData),
+  });
+
+  if (!res.ok) throw new Error('Failed to create chapter');
+
+  return await res.json()
+};
+
+export {createChapter, updateChapter}

@@ -30,6 +30,11 @@ export interface IChaptersPayload{
     epigraph?: IEpigraph
 }
 
+export interface IChapterUpdatePayload{
+    title?:string,
+    completed?:boolean
+}
+
 export interface Payload<T> {
     data: T,
     entityType: string;

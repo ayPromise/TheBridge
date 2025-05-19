@@ -1,2 +1,13 @@
 @import "tailwindcss";
 @import "./theme.css";
+
+
+.blink {
+    animation: blink 1s ease-in-out infinite;
+  }
+  
+  @keyframes blink {
+    50% {
+      background-color: #DFB54D;
+    }
+  }

@@ -1,5 +1,5 @@
 import { redirect, useLoaderData, useNavigate, type LoaderFunctionArgs } from "react-router"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 // utils
 import { serverAPIRoutes } from "consts/endpoints"
@@ -23,6 +23,8 @@ import { Button } from "@mui/material"
 import ChapterNavigation from "./ChapterNavigation"
 import { useMutation } from "@tanstack/react-query"
 import { fetchChapter, removeBook, updateBook } from "api/book"
+import ProgressBar from "./ProgressBar"
+import { updateChapter } from "api/chapters"
 
 const SERVER_URL = import.meta.env.VITE_STRAPI_BACKEND_URL
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
@@ -70,6 +72,14 @@ const BookPage: React.FC = () => {
         onSuccess: () => navigate("/")
     })
 
+    const updateChapterCompletionMutation = useMutation({
+        mutationKey: ["updateChapter", currentChapter?.id],
+        mutationFn: updateChapter,
+        onSuccess: (updatedChapter: IChapter) => {
+            setCurrentChapter(updatedChapter)
+        }
+    })
+
     useEffect(() => {
         if (currentChapter
             && currentChapter !== initialChapter
@@ -99,46 +109,73 @@ const BookPage: React.FC = () => {
     const handleNavigateChapter = async (chapterId: number) => {
         const chapter = await fetchChapter({ bookId: book.id, chapterId })
 
+        const sameCurrentChapterFromBookState = book.chapters.find((ch) => ch.id === currentChapter?.id)
+
         if (chapter) {
             setCurrentChapter(chapter)
-            window.scrollTo({
-                top: 0,
-                behavior: "smooth"
-            });
+
+            if (currentChapter?.completed && !sameCurrentChapterFromBookState?.completed) {
+                navigate("") // we navigate to the same page to push the new fetch of chapters to keep up with completed ones
+            } else {
+                window.scrollTo({ // we move to the top of the screen instead
+                    top: 0,
+                    behavior: "instant"
+                });
+            }
         }
     }
 
+    const handleCompleteChapter = () => {
+
+        if (currentChapter && !currentChapter.completed && !updateChapterCompletionMutation.isPending) {
+            const payload = {
+                completed: true
+            };
+
+            updateChapterCompletionMutation.mutate({
+                chapterId: currentChapter.id,
+                chapterData: payload
+            });
+        }
+    }
+    const completeChapterFunctionRef = useRef(handleCompleteChapter)
+    completeChapterFunctionRef.current = handleCompleteChapter
+
     return (
-        <div className="p-6 max-w-3xl mx-auto relative">
-            <div className="absolute -right-[150px] top-[130px]">
-                <Button variant="contained" color="error" onClick={() => removeBookMutation.mutate({ bookId: book.id })}>
-                    Remove the book
-                </Button>
+        <div className="mx-auto flex-grow">
+            {currentChapter && <ProgressBar onFinish={() => completeChapterFunctionRef.current()} />}
+
+            <div className="max-w-3xl py-6 mx-auto relative">
+
+                <div className="absolute right-[0] top-[25px]">
+                    <Button variant="contained" color="error" onClick={() => removeBookMutation.mutate({ bookId: book.id })}>
+                        Remove the book
+                    </Button>
+                </div>
+
+                {
+                    currentChapter && <>
+
+                        {/** Selection Tab for Chapters */}
+                        <ChapterSelector book={book} setCurrentChapter={setCurrentChapter} currentChapter={currentChapter} />
+
+                        {/** Chapter Content */}
+                        <div>
+                            <h2 className="text-2xl font-semibold mb-4">{currentChapter.title}</h2>
+
+                            {/** Epigraph Content */}
+                            <Epigraph epigraphData={currentChapter.epigraph} />
+
+                            {/** Text itself */}
+                            <ParagraphContent list={currentChapter.paragraphs} />
+
+                            {/** Next / Previous chapter selection */}
+                            <ChapterNavigation currentChapter={currentChapter} allChapters={book.chapters} handleNavigateChapter={handleNavigateChapter} />
+                        </div>
+
+                    </>
+                }
             </div>
-            <h1 className="text-3xl font-bold mb-6">{book.title}</h1>
-
-            {
-                currentChapter && <>
-
-                    {/** Selection Tab for Chapters */}
-                    <ChapterSelector book={book} setCurrentChapter={setCurrentChapter} currentChapter={currentChapter} />
-
-                    {/** Chapter Content */}
-                    <div>
-                        <h2 className="text-2xl font-semibold mb-4">{currentChapter.title}</h2>
-
-                        {/** Epigraph Content */}
-                        <Epigraph epigraphData={currentChapter.epigraph} />
-
-                        {/** Text itself */}
-                        <ParagraphContent list={currentChapter.paragraphs} />
-
-                        {/** Next / Previous chapter selection */}
-                        <ChapterNavigation currentChapter={currentChapter} allChapters={book.chapters} handleNavigateChapter={handleNavigateChapter} />
-                    </div>
-
-                </>
-            }
         </div>
 
     )
